@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: aifinpay-gemini-commerce-agent
+    runtime: node
+    plan: free
+    region: oregon
+    branch: main
+    autoDeploy: true
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: LOG_LEVEL
+        value: info
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash
+      - key: FIRESTORE_ENABLED
+        value: "false"
+      - key: AIFINPAY_API_BASE_URL
+        value: https://api.aifinpay.io
+      - key: AIFINPAY_GATEWAY_ORIGINS
+        value: https://gateway.aifinpay.io
+      - key: AIFINPAY_DAILY_BUDGET_USD
+        value: "1"
+      - key: AIFINPAY_PER_CALL_BUDGET_USD
+        value: "0.05"
