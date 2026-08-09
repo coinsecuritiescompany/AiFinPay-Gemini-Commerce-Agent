@@ -43,6 +43,7 @@ export class AiFinPayExecutor implements PaymentExecutor {
         evmAddress: null,
         solanaAddress: null,
         casperAddress: null,
+        balance: null,
         recommendedFundingNetwork: "polygon",
         dailyBudgetUsd: this.config.dailyBudgetUsd,
         perCallBudgetUsd: this.config.perCallBudgetUsd
@@ -50,11 +51,21 @@ export class AiFinPayExecutor implements PaymentExecutor {
     }
 
     const agent = await this.agent();
+    let balance: Awaited<ReturnType<AiFinPayAgent["balance"]>> | null = null;
+    try {
+      balance = await agent.balance();
+    } catch {
+      // Address discovery must stay available even when a public RPC or price
+      // source is temporarily unavailable. Funding can still be verified on
+      // the relevant explorer.
+    }
+
     return {
       configured: true,
       evmAddress: agent.evmAddress,
       solanaAddress: agent.solanaAddress,
       casperAddress: agent.casperAddress,
+      balance,
       recommendedFundingNetwork: "polygon",
       dailyBudgetUsd: this.config.dailyBudgetUsd,
       perCallBudgetUsd: this.config.perCallBudgetUsd
