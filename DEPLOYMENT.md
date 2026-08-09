@@ -75,7 +75,8 @@ After the first deployment, configure secrets and environment variables on the C
 NODE_ENV=production
 GOOGLE_CLOUD_PROJECT=<project-id>
 GOOGLE_CLOUD_LOCATION=global
-GEMINI_MODEL=gemini-2.5-flash
+GEMINI_MODEL=gemini-3.6-flash
+GEMINI_STARTUP_SMOKE_TEST=false
 FIRESTORE_ENABLED=true
 AIFINPAY_API_BASE_URL=https://api.aifinpay.io
 AIFINPAY_GATEWAY_ORIGINS=https://gateway.aifinpay.io
@@ -95,5 +96,7 @@ curl -sS "$SERVICE_URL/v1/metrics"
 ```
 
 `/health` must show `gemini`, `aifinpay`, `firestore` and, for the optional prize, `circle` as configured.
+
+For an explicit Gemini connectivity proof, temporarily set `GEMINI_STARTUP_SMOKE_TEST=true`, redeploy, confirm a `gemini.startup_smoke.success` log event with a model request ID, then return the variable to `false`.
 
 Capture the Cloud Run revision, Gemini observability view, Cloud Logging traces and monthly billing/cost statements for Devpost.
