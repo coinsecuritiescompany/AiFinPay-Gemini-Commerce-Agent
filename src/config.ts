@@ -14,7 +14,7 @@ const EnvSchema = z.object({
   GOOGLE_CLOUD_LOCATION: z.string().default("global"),
   GEMINI_API_KEY: z.string().min(1).optional(),
   GOOGLE_API_KEY: z.string().min(1).optional(),
-  GEMINI_MODEL: z.string().default("gemini-2.5-flash"),
+  GEMINI_MODEL: z.string().default("gemini-3.6-flash"),
   GEMINI_STARTUP_SMOKE_TEST: booleanFromString.default(false),
   FIRESTORE_ENABLED: booleanFromString.default(false),
   FIRESTORE_DATABASE_ID: z.string().default("(default)"),
