@@ -17,14 +17,23 @@ function sleep(ms: number) {
 }
 
 function candidateDecision(base: CommerceDecision, offer: Offer): CommerceDecision {
+  const { counterOfferUsd: _counterOfferUsd, ...rest } = base;
   return {
-    ...base,
+    ...rest,
     decision: "PAY",
     amountUsd: offer.priceUsd,
     network: offer.network,
     asset: offer.asset,
-    toolCall: "execute_payment",
-    counterOfferUsd: undefined
+    toolCall: "execute_payment"
+  };
+}
+
+function objectiveWithOffer(objective: ObjectiveRecord, primary: Offer, candidate: Offer): ObjectiveRecord {
+  return {
+    ...objective,
+    offers: objective.offers.map((offer) =>
+      offer.offerId === primary.offerId && offer.merchantId === primary.merchantId ? candidate : offer
+    )
   };
 }
 
@@ -42,7 +51,8 @@ function recoveryCandidates(primary: Offer, objective: ObjectiveRecord, baseDeci
     if (index === 0) return true;
     if (!objective.policy.recovery.allowNetworkFailover && offer.network !== primary.network) return false;
     if (!objective.policy.recovery.allowAssetFailover && offer.asset !== primary.asset) return false;
-    return evaluatePolicy(objective, candidateDecision(baseDecision, offer)).approved;
+    const candidateObjective = objectiveWithOffer(objective, primary, offer);
+    return evaluatePolicy(candidateObjective, candidateDecision(baseDecision, offer)).approved;
   });
 }
 
@@ -65,7 +75,8 @@ export async function executeWithRecovery(
       attempts += 1;
       path.push(`${candidate.network}:${candidate.asset}:attempt-${attempts}`);
       try {
-        const evidence = await executor.execute(candidate, objective);
+        const candidateObjective = objectiveWithOffer(objective, primary, candidate);
+        const evidence = await executor.execute(candidate, candidateObjective);
         return {
           evidence,
           offer: candidate,
