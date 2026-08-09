@@ -1,5 +1,5 @@
 {
-  "name": "@aifinpay/gemini-commerce-agent",
+  "name": "aifinpay-gemini-commerce-agent",
   "version": "0.1.1",
   "type": "module",
   "description": "Gemini-powered autonomous commerce agent with deterministic spending policy and AiFinPay AIFP-1 payments.",
