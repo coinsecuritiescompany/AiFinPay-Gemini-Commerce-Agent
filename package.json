@@ -1,8 +1,8 @@
 {
   "name": "aifinpay-gemini-commerce-agent",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "type": "module",
-  "description": "Gemini-powered autonomous commerce agent with deterministic spending policy and AiFinPay AIFP-1 payments.",
+  "description": "Gemini-powered multimodal commerce agent with deterministic spending policy, negotiation, self-healing execution, and AiFinPay AIFP-1 payments.",
   "license": "SEE LICENSE IN LICENSE",
   "homepage": "https://aifinpay.io",
   "repository": {
@@ -15,6 +15,10 @@
   "keywords": [
     "aifinpay",
     "gemini",
+    "multimodal",
+    "procurement",
+    "negotiation",
+    "self-healing",
     "ai-agent",
     "ai-agents",
     "agentic-ai",
@@ -48,6 +52,7 @@
     "LICENSE",
     "NOTICE",
     "ARCHITECTURE.md",
+    "ADVANCED_COMMERCE.md",
     "HACKATHON_DISCLOSURE.md",
     "EVIDENCE.md"
   ],
