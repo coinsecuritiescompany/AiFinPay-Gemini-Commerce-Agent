@@ -43,6 +43,7 @@ export const testConfig: AppConfig = {
     startupSmokeTest: false
   },
   firestore: { enabled: false, project: undefined, databaseId: "(default)" },
+  merchantApi: { endpoints: [], timeoutMs: 8000 },
   aifinpay: {
     seedHex: undefined,
     apiBaseUrl: "https://api.aifinpay.io",
