@@ -36,6 +36,31 @@ export class AiFinPayExecutor implements PaymentExecutor {
     return this.agentPromise;
   }
 
+  async publicStatus() {
+    if (!this.config.seedHex) {
+      return {
+        configured: false,
+        evmAddress: null,
+        solanaAddress: null,
+        casperAddress: null,
+        recommendedFundingNetwork: "polygon",
+        dailyBudgetUsd: this.config.dailyBudgetUsd,
+        perCallBudgetUsd: this.config.perCallBudgetUsd
+      };
+    }
+
+    const agent = await this.agent();
+    return {
+      configured: true,
+      evmAddress: agent.evmAddress,
+      solanaAddress: agent.solanaAddress,
+      casperAddress: agent.casperAddress,
+      recommendedFundingNetwork: "polygon",
+      dailyBudgetUsd: this.config.dailyBudgetUsd,
+      perCallBudgetUsd: this.config.perCallBudgetUsd
+    };
+  }
+
   async execute(offer: Offer, _objective: ObjectiveRecord): Promise<PaymentEvidence> {
     const agent = await this.agent();
     const response = await agent.fetchPaid(
