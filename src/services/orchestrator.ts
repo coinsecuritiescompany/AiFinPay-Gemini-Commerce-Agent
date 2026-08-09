@@ -21,11 +21,11 @@ export interface RunResult {
 }
 
 function paymentDecision(base: CommerceDecision, amountUsd: number): CommerceDecision {
+  const { counterOfferUsd: _counterOfferUsd, ...rest } = base;
   return {
-    ...base,
+    ...rest,
     decision: "PAY",
     amountUsd,
-    counterOfferUsd: undefined,
     toolCall: "execute_payment"
   };
 }
