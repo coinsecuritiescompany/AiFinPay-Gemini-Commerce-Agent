@@ -15,6 +15,7 @@ const EnvSchema = z.object({
   GEMINI_API_KEY: z.string().min(1).optional(),
   GOOGLE_API_KEY: z.string().min(1).optional(),
   GEMINI_MODEL: z.string().default("gemini-2.5-flash"),
+  GEMINI_STARTUP_SMOKE_TEST: booleanFromString.default(false),
   FIRESTORE_ENABLED: booleanFromString.default(false),
   FIRESTORE_DATABASE_ID: z.string().default("(default)"),
   AIFINPAY_AGENT_SEED_HEX: z.string().regex(/^[0-9a-fA-F]{64}$/).optional(),
@@ -54,7 +55,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env) {
       project: values.GOOGLE_CLOUD_PROJECT,
       location: values.GOOGLE_CLOUD_LOCATION,
       apiKey: values.GEMINI_API_KEY ?? values.GOOGLE_API_KEY,
-      model: values.GEMINI_MODEL
+      model: values.GEMINI_MODEL,
+      startupSmokeTest: values.GEMINI_STARTUP_SMOKE_TEST
     },
     firestore: {
       enabled: values.FIRESTORE_ENABLED,
