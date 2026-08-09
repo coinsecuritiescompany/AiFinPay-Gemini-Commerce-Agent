@@ -6,3 +6,4 @@ coverage
 tests
 evidence/private
 *.log
+gha-creds-*.json
