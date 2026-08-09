@@ -18,7 +18,8 @@ Because `NODE_ENV=production` is present during Render builds, `--include=dev` i
 NODE_ENV=production
 LOG_LEVEL=info
 ADMIN_TOKEN=<long random secret>
-GEMINI_MODEL=gemini-2.5-flash
+GEMINI_MODEL=gemini-3.6-flash
+GEMINI_STARTUP_SMOKE_TEST=false
 FIRESTORE_ENABLED=false
 AIFINPAY_AGENT_SEED_HEX=<64 hex characters>
 AIFINPAY_API_BASE_URL=https://api.aifinpay.io
@@ -36,6 +37,8 @@ GEMINI_API_KEY=<Gemini API key>
 ```
 
 `GOOGLE_API_KEY` remains a backwards-compatible alias, but new deployments should use `GEMINI_API_KEY`.
+
+`GEMINI_STARTUP_SMOKE_TEST=true` performs one structured Gemini function-call test at application startup. It never executes a payment. Use it only for deployment verification, then return it to `false` to avoid consuming a Gemini request on every restart.
 
 For Google Cloud / Vertex AI production credentials, prefer a dedicated Google Cloud service account with least-privilege access and a secure credential injection strategy. Do not commit credential JSON to the repository.
 
@@ -65,7 +68,9 @@ curl -sS https://<service>.onrender.com/health
 curl -sS https://<service>.onrender.com/v1/metrics
 ```
 
-The `/health` response is the source of truth for which integrations are configured. Do not claim live Gemini, Firestore, Circle, or funded AiFinPay settlement until the corresponding production integration has been verified.
+The `/health` response is the source of truth for which integrations are configured. Do not claim live Firestore, Circle, or funded AiFinPay settlement until the corresponding production integration has been verified.
+
+For Gemini, a successful `gemini.startup_smoke.success` event in the Render application logs proves that the deployed service completed a real Gemini API request and received a structured function call response.
 
 ## XPRIZE evidence
 
