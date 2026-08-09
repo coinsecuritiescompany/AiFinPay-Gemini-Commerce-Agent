@@ -13,7 +13,21 @@ const objective: ObjectiveRecord = {
     minConfidence: 0.6,
     allowedMerchants: ["merchant-1"],
     allowedNetworks: ["polygon"],
-    allowedAssets: ["USDC"]
+    allowedAssets: ["USDC"],
+    negotiation: {
+      enabled: false,
+      triggerAtBudgetRatio: 0.8,
+      maxDiscountPct: 0.15,
+      minCounterOfferUsd: 0,
+      payIfDeclined: false
+    },
+    recovery: {
+      enabled: true,
+      maxAttempts: 3,
+      baseDelayMs: 0,
+      allowNetworkFailover: true,
+      allowAssetFailover: false
+    }
   },
   offers: [{
     merchantId: "merchant-1",
@@ -25,7 +39,8 @@ const objective: ObjectiveRecord = {
     network: "polygon",
     asset: "USDC",
     actionTier: "COMPLEX",
-    paymentRail: "AIFP1"
+    paymentRail: "AIFP1",
+    recoveryOptions: []
   }]
 };
 
@@ -68,5 +83,35 @@ describe("evaluatePolicy", () => {
 
   it("blocks low-confidence autonomous spending", () => {
     expect(evaluatePolicy(objective, { ...decision, confidence: 0.4 }).code).toBe("LOW_CONFIDENCE");
+  });
+
+  it("approves a bounded counter-offer only near the budget ceiling", () => {
+    const modified = structuredClone(objective);
+    modified.policy.negotiation.enabled = true;
+    modified.policy.maxBudgetUsd = 0.0022;
+    modified.policy.autoApproveLimitUsd = 0.0022;
+    modified.offers[0]!.negotiationUrl = "https://gateway.aifinpay.io/example/negotiate";
+    const result = evaluatePolicy(modified, {
+      ...decision,
+      decision: "NEGOTIATE",
+      counterOfferUsd: 0.0018,
+      toolCall: "negotiate_offer"
+    });
+    expect(result.code).toBe("NEGOTIATION_APPROVED");
+  });
+
+  it("blocks an excessive negotiation discount", () => {
+    const modified = structuredClone(objective);
+    modified.policy.negotiation.enabled = true;
+    modified.policy.maxBudgetUsd = 0.0022;
+    modified.policy.autoApproveLimitUsd = 0.0022;
+    modified.offers[0]!.negotiationUrl = "https://gateway.aifinpay.io/example/negotiate";
+    const result = evaluatePolicy(modified, {
+      ...decision,
+      decision: "NEGOTIATE",
+      counterOfferUsd: 0.001,
+      toolCall: "negotiate_offer"
+    });
+    expect(result.code).toBe("NEGOTIATION_INVALID");
   });
 });
