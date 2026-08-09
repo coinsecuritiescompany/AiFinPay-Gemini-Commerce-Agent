@@ -23,7 +23,21 @@ async function runGeminiStartupSmokeTest() {
       minConfidence: 0,
       allowedMerchants: ["smoke-merchant"],
       allowedNetworks: ["base"],
-      allowedAssets: ["USDC"]
+      allowedAssets: ["USDC"],
+      negotiation: {
+        enabled: false,
+        triggerAtBudgetRatio: 0.8,
+        maxDiscountPct: 0.15,
+        minCounterOfferUsd: 0,
+        payIfDeclined: false
+      },
+      recovery: {
+        enabled: false,
+        maxAttempts: 1,
+        baseDelayMs: 0,
+        allowNetworkFailover: false,
+        allowAssetFailover: false
+      }
     },
     offers: [{
       merchantId: "smoke-merchant",
@@ -35,7 +49,8 @@ async function runGeminiStartupSmokeTest() {
       network: "base",
       asset: "USDC",
       actionTier: "STANDARD",
-      paymentRail: "AIFP1"
+      paymentRail: "AIFP1",
+      recoveryOptions: []
     }]
   };
 
