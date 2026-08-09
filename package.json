@@ -1,11 +1,59 @@
 {
-  "name": "aifinpay-gemini-commerce-agent",
+  "name": "@aifinpay/gemini-commerce-agent",
   "version": "0.1.1",
-  "private": true,
   "type": "module",
-  "description": "Gemini-powered autonomous commerce agent using AiFinPay and Google Cloud.",
+  "description": "Gemini-powered autonomous commerce agent with deterministic spending policy and AiFinPay AIFP-1 payments.",
+  "license": "SEE LICENSE IN LICENSE",
+  "homepage": "https://aifinpay.io",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/coinsecuritiescompany/AiFinPay-Gemini-Commerce-Agent.git"
+  },
+  "bugs": {
+    "url": "https://github.com/coinsecuritiescompany/AiFinPay-Gemini-Commerce-Agent/issues"
+  },
+  "keywords": [
+    "aifinpay",
+    "gemini",
+    "ai-agent",
+    "ai-agents",
+    "agentic-ai",
+    "agent-commerce",
+    "agent-payments",
+    "autonomous-agents",
+    "x402",
+    "http-402",
+    "payments",
+    "micropayments",
+    "google-gemini",
+    "google-cloud",
+    "mcp"
+  ],
   "engines": {
     "node": ">=22"
+  },
+  "bin": {
+    "aifinpay-gemini-commerce-agent": "dist/server.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/app.d.ts",
+      "import": "./dist/app.js"
+    },
+    "./server": "./dist/server.js"
+  },
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE",
+    "NOTICE",
+    "ARCHITECTURE.md",
+    "HACKATHON_DISCLOSURE.md",
+    "EVIDENCE.md"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   },
   "scripts": {
     "dev": "tsx watch src/server.ts",
@@ -15,7 +63,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check": "npm run typecheck && npm run test"
+    "check": "npm run typecheck && npm run test",
+    "prepublishOnly": "npm run check && npm run build"
   },
   "dependencies": {
     "@aifinpay/agent": "1.8.1",
