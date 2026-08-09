@@ -306,3 +306,13 @@ Payment retries must rely on AIFP-1 idempotency and settlement replay protection
 | Evidence records are mutable documents | Append-only audit stream and retention policy |
 
 These limits are documented to prevent the hackathon implementation from being mistaken for a fully hardened multi-tenant financial platform.
+
+## v0.2 advanced commerce layer
+
+The core trust model now includes three optional capability stages before/around settlement:
+
+1. `GeminiVisionEngine` converts image input into structured procurement facts; raw image bytes are not stored.
+2. `MerchantDiscoveryService` queries only operator-configured merchant catalog endpoints and validates returned offers against the same offer schema.
+3. `NegotiationService` and `executeWithRecovery` add bounded counter-offers plus transient-failure recovery. Every negotiated or recovery candidate is re-checked by deterministic spending policy before AiFinPay receives it.
+
+The AI layer never receives signing credentials and cannot expand merchant/network/asset allowlists. See [ADVANCED_COMMERCE.md](ADVANCED_COMMERCE.md) for the complete contracts and threat boundaries.

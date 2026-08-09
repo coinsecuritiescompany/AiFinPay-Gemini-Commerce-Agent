@@ -71,3 +71,7 @@ Maximum length: 3 minutes.
 6. Show receipt verification and delivered result.
 7. Show Circle wallet/transaction proof, if entering that prize.
 8. Show Google usage evidence, Render logs and dashboard metrics.
+
+## v0.2 advanced-capability code evidence
+
+Automated code/test evidence now covers multimodal objective construction without raw-image persistence, deterministic negotiation bounds, transient failure classification, and allowlisted recovery failover. This is implementation evidence only. A real multimodal settled purchase, external merchant negotiation, or real cross-network recovery must not be claimed until a production trace plus corresponding merchant/payment evidence exists.

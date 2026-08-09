@@ -25,3 +25,14 @@ The project uses and clearly discloses these resources that existed before this 
 - existing npm download and MCP integration history.
 
 Historical AiFinPay traction is not counted as users acquired by the new Gemini Commerce Agent. Only activity produced by this new service during the hackathon period is reported in its user, payment and revenue fields.
+
+### v0.2 hackathon additions
+
+- Gemini-native image understanding for procurement objectives.
+- Merchant catalog discovery adapter for operator-configured APIs.
+- Dynamic negotiation decision and bounded counter-offer policy.
+- Merchant negotiation exchange with agreed-price re-validation.
+- Self-healing payment execution for classified transient Web3/RPC failures.
+- Allowlisted recovery-path validation and recovery evidence records.
+
+These modules were created for the hackathon project. They build on the disclosed pre-existing AiFinPay SDK/AIFP settlement infrastructure. Code/tests do not imply a real external merchant negotiation or cross-network recovery until separately evidenced.

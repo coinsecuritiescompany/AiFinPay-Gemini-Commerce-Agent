@@ -26,6 +26,16 @@ Built for the **Build with Gemini XPRIZE** on top of disclosed, pre-existing AiF
 > [!NOTE]
 > The public Render deployment and a real Gemini 3.6 Flash structured-function-call smoke test are verified. A funded AIFP-1 settlement, Circle transaction, third-party usage, and hackathon-period customer revenue are not claimed until verifiable records exist.
 
+## v0.2 — autonomous procurement beyond text
+
+The v0.2 capability layer turns the agent from a linear JSON buyer into a bounded procurement operator:
+
+- **Multimodal procurement** — submit a server-part photo, product image, invoice, chart, or analytics screenshot. Gemini extracts procurement-relevant facts and produces a merchant-search query; raw image bytes are not persisted.
+- **Dynamic negotiation** — when a merchant exposes a negotiation endpoint and policy explicitly permits it, Gemini may propose a counter-offer. Deterministic rules cap the discount, enforce the budget and allowlists, and re-validate the agreed offer before payment.
+- **Self-healing payments** — transient gas/RPC/network failures are classified and retried within a fixed attempt budget. Alternative network/asset paths are used only when supplied in the offer and independently permitted by `allowedNetworks`, `allowedAssets`, and recovery policy.
+
+See [ADVANCED_COMMERCE.md](ADVANCED_COMMERCE.md) for request contracts, trust boundaries, negotiation rules, recovery semantics, and evidence limitations.
+
 ## Why this exists
 
 Human checkout flows do not work for autonomous agents. An agent needs to understand an offer, choose whether it is useful, stay inside an operator-defined budget, pay without receiving signing keys, verify delivery, and leave an audit trail.
@@ -130,6 +140,8 @@ await app.listen({ port: 8080 });
 
 Live Gemini calls require `GEMINI_API_KEY`. Production financial execution additionally requires an `ADMIN_TOKEN` and an AiFinPay agent seed; never commit these values.
 
+Optional merchant catalog discovery uses `MERCHANT_API_ENDPOINTS` (comma-separated HTTPS base URLs exposing `POST /search`).
+
 ## Repository map
 
 ```text
@@ -140,6 +152,10 @@ src/
 ├── dashboard.ts              operational evidence dashboard
 └── services/
     ├── gemini.ts             structured Gemini decision engine
+    ├── vision.ts             Gemini multimodal procurement inspection
+    ├── merchant-discovery.ts configured merchant catalog search
+    ├── negotiation.ts        bounded counter-offer exchange
+    ├── recovery.ts           deterministic retry and network/asset failover
     ├── policy.ts             deterministic financial policy
     ├── orchestrator.ts       objective state machine
     ├── aifinpay.ts           AIFP-1 payment execution
@@ -227,6 +243,7 @@ curl -sS -X POST http://localhost:8080/v1/objectives/OBJECTIVE_ID/run \
 | `GET` | `/health` | Public | Runtime and integration status |
 | `GET` | `/v1/metrics` | Public | Aggregate non-secret metrics |
 | `GET` | `/v1/aifinpay/status` | Public | Public agent addresses, funding recommendation and safe balance snapshot |
+| `POST` | `/v1/visual-objectives` | Admin token | Image → Gemini inspection → merchant offers → optional objective execution |
 | `POST` | `/v1/objectives` | Admin token | Create objective |
 | `GET` | `/v1/objectives/:id` | Admin token | Read objective state |
 | `POST` | `/v1/objectives/:id/run` | Admin token | Execute Gemini → policy → payment |
@@ -248,6 +265,7 @@ Successful AIFP-1 transactions record 99% merchant proceeds and a fixed 1% AiFin
 | Document | Purpose |
 |---|---|
 | [Architecture](ARCHITECTURE.md) | Components, trust boundaries, flows, state, deployment and data model |
+| [Advanced commerce](ADVANCED_COMMERCE.md) | Multimodal procurement, negotiation and self-healing payment execution |
 | [Render deployment](RENDER_DEPLOYMENT.md) | Production Render runtime configuration |
 | [Deployment](DEPLOYMENT.md) | Optional Google Cloud, Firestore, Cloud Run and Secret Manager setup |
 | [Security](SECURITY.md) | Supported version, threat controls and private reporting |
