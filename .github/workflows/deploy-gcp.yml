@@ -63,7 +63,7 @@ jobs:
             --max-instances=2 \
             --concurrency=20 \
             --timeout=300 \
-            --set-env-vars="NODE_ENV=production,GOOGLE_CLOUD_PROJECT=${PROJECT_ID},GOOGLE_CLOUD_LOCATION=global,GEMINI_MODEL=gemini-2.5-flash,FIRESTORE_ENABLED=true,FIRESTORE_DATABASE_ID=(default),AIFINPAY_API_BASE_URL=https://api.aifinpay.io,AIFINPAY_GATEWAY_ORIGINS=https://gateway.aifinpay.io,AIFINPAY_DAILY_BUDGET_USD=1,AIFINPAY_PER_CALL_BUDGET_USD=0.05,CIRCLE_BLOCKCHAIN=ARC-TESTNET,CIRCLE_MAX_TRANSFER_USD=1" \
+            --set-env-vars="NODE_ENV=production,GOOGLE_CLOUD_PROJECT=${PROJECT_ID},GOOGLE_CLOUD_LOCATION=global,GEMINI_MODEL=gemini-3.6-flash,GEMINI_STARTUP_SMOKE_TEST=false,FIRESTORE_ENABLED=true,FIRESTORE_DATABASE_ID=(default),AIFINPAY_API_BASE_URL=https://api.aifinpay.io,AIFINPAY_GATEWAY_ORIGINS=https://gateway.aifinpay.io,AIFINPAY_DAILY_BUDGET_USD=1,AIFINPAY_PER_CALL_BUDGET_USD=0.05,CIRCLE_BLOCKCHAIN=ARC-TESTNET,CIRCLE_MAX_TRANSFER_USD=1" \
             --set-secrets="ADMIN_TOKEN=aifinpay-admin-token:latest,AIFINPAY_AGENT_SEED_HEX=aifinpay-agent-seed:latest"
 
       - name: Verify production health
