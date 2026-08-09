@@ -1,0 +1,57 @@
+name: Bug report
+description: Report a reproducible non-sensitive defect
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: "Do not report vulnerabilities, keys, payment secrets, receipt tokens, or customer data here. Follow SECURITY.md instead."
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      placeholder: 8d8159e
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - API
+        - Gemini decision
+        - Policy engine
+        - AiFinPay payment
+        - Circle transfer
+        - Firestore
+        - Dashboard or metrics
+        - Deployment
+        - Documentation
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Sanitized reproduction
+      description: Remove credentials, addresses tied to private users, receipt tokens, and customer data.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety confirmation
+      options:
+        - label: I removed all secrets and sensitive financial or customer data.
+          required: true

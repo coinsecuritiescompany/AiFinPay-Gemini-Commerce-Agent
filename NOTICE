@@ -1,0 +1,17 @@
+AiFinPay Gemini Commerce Agent
+Copyright (c) 2026 AiFinPay and its respective copyright holders.
+All rights reserved.
+
+This repository is source-available under the AiFinPay Source-Available
+License 1.0 included in LICENSE. It is not distributed under the MIT License
+and is not an open-source project.
+
+The AiFinPay name, logos, AIFP names, product names, visual identity, and trade
+dress are not licensed with the source code. See TRADEMARKS.md.
+
+Third-party packages and services referenced by this project remain the
+property of their respective owners and are governed by their own terms. The
+package-lock.json file records the exact dependency graph used by this build.
+Nothing in the AiFinPay Source-Available License changes a third party's
+license or grants rights in Google, Gemini, Google Cloud, Circle, GitHub,
+Devpost, XPRIZE, Node.js, TypeScript, Fastify, or other third-party marks.

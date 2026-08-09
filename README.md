@@ -1,66 +1,161 @@
 # AiFinPay Gemini Commerce Agent
 
-AiFinPay Gemini Commerce Agent is an AI-native commerce operator built for the **Build with Gemini XPRIZE**. Gemini evaluates paid digital services, while deterministic code enforces budgets and allowlists before AiFinPay executes an HTTP 402 payment.
+<p align="center">
+  <img src="docs/assets/hero.svg" alt="AiFinPay Gemini Commerce Agent — policy-controlled payments for autonomous agents" width="100%" />
+</p>
 
-The project is a new hackathon application built on top of disclosed pre-existing AiFinPay infrastructure.
+<p align="center">
+  <a href="https://github.com/coinsecuritiescompany/AiFinPay-Gemini-Commerce-Agent/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/coinsecuritiescompany/AiFinPay-Gemini-Commerce-Agent/actions/workflows/ci.yml/badge.svg" /></a>
+  <img alt="Node.js 22+" src="https://img.shields.io/badge/Node.js-22%2B-339933?logo=nodedotjs&logoColor=white" />
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white" />
+  <img alt="Gemini 2.5 Flash" src="https://img.shields.io/badge/Gemini-2.5%20Flash-4285F4?logo=googlegemini&logoColor=white" />
+  <img alt="License: AiFinPay Source-Available 1.0" src="https://img.shields.io/badge/license-source--available-F59E0B" />
+</p>
 
-## What it does
+<p align="center">
+  <strong>Gemini decides. Deterministic policy authorizes. AiFinPay pays.</strong>
+</p>
 
-1. Accepts a goal, spending policy and merchant offers.
-2. Calls Gemini through Google Cloud with forced function calling.
-3. Validates the proposed purchase independently of the model.
-4. Executes a real AIFP-1 payment with `@aifinpay/agent`.
-5. Verifies the paid response and stores only non-secret evidence.
-6. Exposes production metrics for Devpost evidence.
-7. Supports a separately protected Circle Developer-Controlled Wallet USDC transfer for the Agentic Economy Prize.
+AiFinPay Gemini Commerce Agent is a policy-controlled commerce operator for autonomous software. It evaluates paid digital services with Gemini, independently enforces budgets and allowlists, executes AIFP-1 HTTP 402 payments, verifies delivery, and records auditable evidence on Google Cloud.
 
-## Safety model
+Built for the **Build with Gemini XPRIZE** on top of disclosed, pre-existing AiFinPay payment infrastructure.
 
-Gemini never receives or controls a private key. It proposes one structured decision. The policy engine checks the exact merchant, offer, tier, amount, network, asset, budget, auto-approval limit and confidence threshold. Only deterministic code can call the payment adapter.
+> [!NOTE]
+> The source implementation and local validation are complete. A public production deployment, live Gemini evidence, funded Circle transaction, third-party usage, and hackathon-period revenue are not claimed until verifiable production records exist.
 
-Circle transfers require:
+## Why this exists
 
-- a configured developer-controlled wallet;
-- an `X-Admin-Token` header;
-- `confirm: true` in the request;
-- an amount below `CIRCLE_MAX_TRANSFER_USD`.
+Human checkout flows do not work for autonomous agents. An agent needs to understand an offer, choose whether it is useful, stay inside an operator-defined budget, pay without receiving signing keys, verify delivery, and leave an audit trail.
 
-## Architecture
+This service separates reasoning from financial authority:
+
+| Layer | Responsibility | Financial authority |
+|---|---|---|
+| Gemini | Evaluate offers and propose one structured action | None |
+| Policy engine | Verify price, merchant, asset, network, tier, confidence, and budget | Approve or block |
+| AiFinPay executor | Perform the exact approved AIFP-1 HTTP 402 flow | Exact approved payment only |
+| Circle service | Create an explicitly confirmed, capped USDC proof transfer | Admin-only isolated path |
+| Firestore and logging | Persist state and non-secret evidence | None |
+
+## System at a glance
 
 ```mermaid
 flowchart TD
-  U["User or agent"] --> A["Objective API"]
-  A --> G["Gemini decision"]
-  G --> P["Policy engine"]
-  P -->|"approved"| F["AiFinPay AIFP-1"]
-  P -->|"blocked"| R["Reject or ask user"]
-  F --> V["Receipt and delivery verification"]
-  V --> E["Firestore and Cloud Logging evidence"]
+  Client["User or agent"] --> API["Objective API"]
+  API --> Gemini["Gemini decision engine"]
+  Gemini --> Policy["Deterministic policy engine"]
+  Policy -->|"blocked or approval needed"| Stop["Reject / await human"]
+  Policy -->|"approved"| Pay["AiFinPay AIFP-1 executor"]
+  Pay --> Merchant["HTTP 402 merchant service"]
+  Merchant --> Evidence["Receipt + delivery evidence"]
+  Evidence --> GCP["Firestore + Cloud Logging"]
 ```
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for the full trust boundaries and records.
+Full component, sequence, deployment, trust-boundary, state, and data diagrams are in [ARCHITECTURE.md](ARCHITECTURE.md).
 
-## Requirements
+## Core guarantees
+
+- Gemini never receives a private key, agent seed, Circle entity secret, or admin token.
+- Every model proposal is checked against the original offer; Gemini cannot rewrite the price or payment destination.
+- Merchant, network, asset, action tier, total budget, auto-approval limit, and confidence are enforced in deterministic TypeScript.
+- Firestore transactionally claims an objective, preventing the same objective from executing twice across instances.
+- Receipt bearer tokens and delivered content are not persisted; the service stores hashes and settlement evidence.
+- Production refuses to start with financial credentials unless a 24+ character admin token is configured.
+- Circle transfers require admin authentication, `confirm: true`, and a hard maximum amount.
+
+## Payment lifecycle
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant C as Client
+  participant A as Commerce API
+  participant G as Gemini
+  participant P as Policy + AiFinPay
+  participant M as Merchant
+  C->>A: Objective + policy + offers
+  A->>G: Untrusted offers as data
+  G-->>A: Structured purchase proposal
+  A->>P: Exact proposal + original policy
+  alt policy approved
+    P->>M: Request paid resource
+    M-->>P: HTTP 402 quote
+    P->>M: Settlement proof + retry
+    M-->>P: Paid response
+    P-->>A: Receipt metadata + delivery hash
+  else blocked
+    P-->>A: Deterministic rejection code
+  end
+  A-->>C: Auditable result
+```
+
+## Technology
+
+| Area | Implementation |
+|---|---|
+| AI decision engine | Google Gemini 2.5 Flash via `@google/genai` and forced function calling |
+| API | Node.js 22, TypeScript, Fastify, Zod |
+| Agent payments | `@aifinpay/agent`, AIFP-1, HTTP 402, USDC |
+| Optional prize proof | Circle Developer-Controlled Wallets |
+| Persistence | Google Cloud Firestore; in-memory adapter for local tests |
+| Runtime | Google Cloud Run |
+| Evidence | Structured Cloud Logging, Firestore records, metrics dashboard |
+| Delivery | Docker, Cloud Build, GitHub Actions |
+
+## Repository map
+
+```text
+src/
+├── app.ts                    HTTP boundary, authentication and security headers
+├── config.ts                 validated environment configuration
+├── domain.ts                 schemas and domain records
+├── dashboard.ts              operational evidence dashboard
+└── services/
+    ├── gemini.ts             structured Gemini decision engine
+    ├── policy.ts             deterministic financial policy
+    ├── orchestrator.ts       objective state machine
+    ├── aifinpay.ts           AIFP-1 payment execution
+    ├── circle.ts             isolated USDC proof transfer
+    └── store.ts              memory and Firestore adapters
+tests/                        policy, security and API tests
+.github/                      CI and contribution templates
+```
+
+## Quick start
+
+### Prerequisites
 
 - Node.js 22+
-- a Google Cloud project with Gemini access
-- Application Default Credentials in production, or `GOOGLE_API_KEY` for local development
-- a persistent AiFinPay agent seed with funded settlement wallet for real payments
-- optional Circle Developer-Controlled Wallet credentials for the prize proof
+- npm 10+
+- Google Cloud project with Gemini access for live model calls
+- funded AiFinPay settlement wallet for live payments
+- optional Circle Developer-Controlled Wallet credentials
 
-## Local setup
+### Run locally
 
 ```bash
+git clone https://github.com/coinsecuritiescompany/AiFinPay-Gemini-Commerce-Agent.git
+cd AiFinPay-Gemini-Commerce-Agent
 cp .env.example .env
-npm install
+npm ci
 npm run dev
 ```
 
-The service starts without financial credentials, but `/v1/objectives/:id/run` cannot complete a production Gemini/payment flow until the corresponding services are configured.
+The service can start without financial credentials for local inspection. Live objective execution remains unavailable until Gemini and AiFinPay are configured.
 
 Open `http://localhost:8080` for the evidence dashboard.
 
-## Create and run an objective
+### Validate
+
+```bash
+npm run check
+npm run build
+npm audit
+```
+
+The current suite contains 13 tests covering policy enforcement, configuration safety, protected financial routes, revenue accounting, and the successful objective flow.
+
+## Minimal objective example
 
 ```bash
 curl -sS http://localhost:8080/v1/objectives \
@@ -92,76 +187,59 @@ curl -sS http://localhost:8080/v1/objectives \
   }'
 ```
 
-Copy the returned `id`, then run:
+Run the returned objective ID:
 
 ```bash
 curl -sS -X POST http://localhost:8080/v1/objectives/OBJECTIVE_ID/run \
   -H "x-admin-token: $ADMIN_TOKEN"
 ```
 
-## Circle proof transfer
+## API surface
 
-This endpoint moves real USDC when production credentials are configured.
+| Method | Route | Authentication | Purpose |
+|---|---|---|---|
+| `GET` | `/` | Public | Evidence dashboard |
+| `GET` | `/health` | Public | Runtime and integration status |
+| `GET` | `/v1/metrics` | Public | Aggregate non-secret metrics |
+| `POST` | `/v1/objectives` | Admin token | Create objective |
+| `GET` | `/v1/objectives/:id` | Admin token | Read objective state |
+| `POST` | `/v1/objectives/:id/run` | Admin token | Execute Gemini → policy → payment |
+| `GET` | `/v1/circle/status` | Public | Circle configuration status |
+| `POST` | `/v1/circle/transfers` | Admin token | Explicit capped USDC transfer |
 
-```bash
-curl -sS -X POST http://localhost:8080/v1/circle/transfers \
-  -H 'content-type: application/json' \
-  -H "x-admin-token: $ADMIN_TOKEN" \
-  -d '{
-    "destinationAddress": "RECIPIENT_ADDRESS",
-    "amountUsd": 0.01,
-    "confirm": true
-  }'
-```
+## Economics recorded by the service
 
-The response contains the Circle transaction ID and, after Circle reports it, the transaction hash and explorer URL.
+| Action tier | Price per action |
+|---|---:|
+| Standard | `$0.0005` |
+| Complex | `$0.002` |
+| Premium | `$0.005` |
 
-## API
+Successful AIFP-1 transactions record 99% merchant proceeds and a fixed 1% AiFinPay protocol fee. Failed or blocked actions add zero payment volume. The policy engine rejects any model-generated price mutation.
 
-| Method | Route | Purpose |
-|---|---|---|
-| `GET` | `/health` | Configuration and runtime status |
-| `GET` | `/` | Evidence dashboard |
-| `POST` | `/v1/objectives` | Create an objective; admin token required |
-| `GET` | `/v1/objectives/:id` | Read objective state; admin token required |
-| `POST` | `/v1/objectives/:id/run` | Execute Gemini → policy → payment; admin token required |
-| `GET` | `/v1/metrics` | Aggregate evidence metrics |
-| `GET` | `/v1/circle/status` | Public Circle configuration status |
-| `POST` | `/v1/circle/transfers` | Protected real USDC transfer |
+## Documentation
 
-## Validation
+| Document | Purpose |
+|---|---|
+| [Architecture](ARCHITECTURE.md) | Components, trust boundaries, flows, state, deployment and data model |
+| [Deployment](DEPLOYMENT.md) | Google Cloud, Firestore, Cloud Run and Secret Manager setup |
+| [Security](SECURITY.md) | Supported version, threat controls and private reporting |
+| [Evidence](EVIDENCE.md) | Hackathon invoices, logs, screenshots, transactions and P&L checklist |
+| [Hackathon disclosure](HACKATHON_DISCLOSURE.md) | New work versus pre-existing AiFinPay resources |
+| [Contributing](CONTRIBUTING.md) | Contribution rules and developer workflow |
+| [Trademark policy](TRADEMARKS.md) | Permitted and prohibited brand use |
 
-```bash
-npm run check
-npm run build
-```
+## License and brand
 
-The test suite proves that:
+Copyright © 2026 AiFinPay and its respective copyright holders. All rights reserved.
 
-- exact policy-compatible decisions execute;
-- altered prices are blocked;
-- merchants outside the allowlist are blocked;
-- high-cost or low-confidence decisions require approval;
-- Circle transfers cannot be triggered without the admin token;
-- protocol revenue is recorded separately from gross payment volume.
+The repository is **source-available, not open source**. The [AiFinPay Source-Available License 1.0](LICENSE) permits review, local evaluation, security research, and hackathon judging. It does not permit production or commercial use, resale, redistribution, public derivative products, competing services, model training on the repository, or use of AiFinPay branding without written permission.
 
-## Deployment and evidence
+Third-party packages remain subject to their own licenses. See [NOTICE](NOTICE) and [TRADEMARKS.md](TRADEMARKS.md).
 
-- [DEPLOYMENT.md](DEPLOYMENT.md) — Google Cloud and Cloud Run
-- [EVIDENCE.md](EVIDENCE.md) — invoices, logs, screenshots, transactions and P&L checklist
-- [HACKATHON_DISCLOSURE.md](HACKATHON_DISCLOSURE.md) — new work versus pre-existing resources
-- [SECURITY.md](SECURITY.md) — secrets, logging and incident handling
+## Links
 
-## Pricing recorded by the application
-
-- Standard: `$0.0005`
-- Complex: `$0.002`
-- Premium: `$0.005`
-- AiFinPay protocol fee: `1%` of a successful AIFP-1 transaction
-- Merchant proceeds: `99%`
-
-These values must match the live merchant quote and receipt. The policy engine refuses model-generated price changes.
-
-## License
-
-MIT — see [LICENSE](LICENSE).
+- Product: [aifinpay.io](https://aifinpay.io)
+- AIFP-1 protocol: [Protocol-AIFP-1](https://github.com/coinsecuritiescompany/Protocol-AIFP-1)
+- Agent SDK: [`@aifinpay/agent`](https://www.npmjs.com/package/@aifinpay/agent)
+- MCP server: [`@aifinpay/mcp`](https://www.npmjs.com/package/@aifinpay/mcp)

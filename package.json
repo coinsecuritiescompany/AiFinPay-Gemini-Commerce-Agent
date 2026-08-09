@@ -1,6 +1,6 @@
 {
   "name": "aifinpay-gemini-commerce-agent",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "description": "Gemini-powered autonomous commerce agent using AiFinPay and Google Cloud.",

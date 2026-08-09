@@ -1,21 +1,149 @@
-MIT License
+AiFinPay Source-Available License 1.0
 
-Copyright (c) 2026 AiFinPay
+Copyright (c) 2026 AiFinPay and its respective copyright holders.
+All rights reserved.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+This license is a source-available license. It is not an open-source license.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+1. DEFINITIONS
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+"AiFinPay" means the AiFinPay project and the person or entity that owns the
+applicable copyright in the Licensed Work.
+
+"Licensed Work" means the source code, object code, documentation, designs,
+workflows, diagrams, configuration, and other materials distributed with this
+license, excluding Third-Party Components.
+
+"Evaluation Use" means private, non-production use solely to review, test,
+perform interoperability analysis, conduct good-faith security research, or
+evaluate a potential commercial relationship with AiFinPay.
+
+"Commercial Use" means any use intended for or resulting in commercial
+advantage, monetary compensation, production operations, customer delivery,
+revenue generation, paid consulting, resale, licensing, or internal business
+operations beyond Evaluation Use.
+
+"Competing Product" means a product or service that provides payment rails,
+wallet infrastructure, settlement, identity, paywalls, traffic monetization,
+or financial infrastructure for AI agents and could reasonably substitute for
+any material AiFinPay product or service.
+
+2. LIMITED LICENSE GRANT
+
+Subject to full compliance with this license, AiFinPay grants you a limited,
+non-exclusive, non-transferable, non-sublicensable, revocable license to:
+
+  a. view and inspect the Licensed Work;
+  b. clone and run the Licensed Work privately for Evaluation Use;
+  c. make private modifications only as necessary for Evaluation Use; and
+  d. test the Licensed Work for hackathon judging, due diligence,
+     interoperability, or good-faith security research.
+
+No other rights are granted by implication, estoppel, or otherwise.
+
+3. PROHIBITED USES
+
+Without AiFinPay's prior written permission, you must not, directly or
+indirectly:
+
+  a. use the Licensed Work in production or for any Commercial Use;
+  b. offer, operate, sell, license, host, or support a Competing Product based
+     on or materially derived from the Licensed Work;
+  c. copy, publish, redistribute, sublicense, sell, lease, or otherwise provide
+     the Licensed Work or a substantial portion of it to a third party;
+  d. publish or distribute modifications, forks, translations, ports, or other
+     derivative works;
+  e. remove, hide, or alter copyright, license, authorship, provenance, or
+     trademark notices;
+  f. represent the Licensed Work or a derivative as your original work;
+  g. use the Licensed Work, its documentation, or repository content to train,
+     fine-tune, evaluate, or supply retrieval data to a machine-learning model
+     or commercial code-generation system;
+  h. use automated extraction to build a substitute dataset, implementation,
+     specification, or service;
+  i. use AiFinPay names, logos, protocol names, domain names, trade dress, or
+     confusingly similar marks except for accurate nominative reference; or
+  j. assist another person or entity in any prohibited use.
+
+4. HACKATHON AND REVIEW PERMISSION
+
+Organizers, administrators, judges, and designated testing personnel of the
+Build with Gemini XPRIZE may access, run, and evaluate the Licensed Work solely
+for administration and judging of the submission. This permission does not
+grant any right to commercialize, redistribute, or create a competing product.
+
+5. SECURITY RESEARCH
+
+Good-faith security research is permitted only when it avoids privacy
+violations, service disruption, unauthorized access to third-party data,
+financial loss, and public disclosure before AiFinPay has had a reasonable
+opportunity to remediate. Vulnerabilities must be reported through the private
+channel described in SECURITY.md.
+
+6. OWNERSHIP AND RESERVATION OF RIGHTS
+
+The Licensed Work is licensed, not sold. AiFinPay and the respective copyright
+holders retain all title, copyright, patent, trade-secret, trademark, and other
+intellectual-property rights in the Licensed Work. All rights not expressly
+granted in Section 2 are reserved.
+
+Possession of a copy, access to a public repository, or submission of a patch
+does not transfer ownership.
+
+7. CONTRIBUTIONS
+
+Unless a separate written agreement applies, a contribution intentionally
+submitted to this repository grants AiFinPay and the repository owner a
+perpetual, worldwide, irrevocable, royalty-free, transferable, sublicensable
+license to use, reproduce, modify, distribute, publicly perform, publicly
+display, commercialize, and relicense that contribution. The contributor
+represents that they have the legal right to grant this license.
+
+8. THIRD-PARTY COMPONENTS
+
+Third-Party Components are licensed under their respective terms. This license
+does not restrict rights separately granted under a Third-Party Component's
+license. A dependency, interface, protocol reference, or package name does not
+make that third-party material part of the Licensed Work.
+
+9. COMMERCIAL LICENSES
+
+Production, commercial, redistribution, OEM, managed-service, partnership, and
+other rights may be available under a separate written agreement with AiFinPay.
+See https://aifinpay.io for contact information.
+
+10. TERMINATION
+
+This license terminates automatically and immediately upon breach. Upon
+termination, you must stop using the Licensed Work and destroy all copies under
+your control, except copies that applicable law requires you to retain. Sections
+3, 6, 7, 8, 10, 11, and 12 survive termination.
+
+11. DISCLAIMER OF WARRANTY
+
+THE LICENSED WORK IS PROVIDED "AS IS" AND "AS AVAILABLE," WITHOUT WARRANTY OF
+ANY KIND, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING WARRANTIES OF TITLE,
+NON-INFRINGEMENT, MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, SECURITY,
+ACCURACY, OR RELIABILITY. YOU ASSUME ALL RISK ARISING FROM ACCESS TO OR USE OF
+THE LICENSED WORK.
+
+12. LIMITATION OF LIABILITY
+
+TO THE MAXIMUM EXTENT PERMITTED BY LAW, AIFINPAY, THE REPOSITORY OWNER, AUTHORS,
+AND CONTRIBUTORS WILL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL,
+CONSEQUENTIAL, EXEMPLARY, OR PUNITIVE DAMAGES; LOSS OF PROFITS, REVENUE, DATA,
+GOODWILL, OR BUSINESS; FINANCIAL OR DIGITAL-ASSET LOSS; OR ANY CLAIM ARISING
+FROM OR RELATED TO THE LICENSED WORK, EVEN IF ADVISED OF THE POSSIBILITY OF
+SUCH DAMAGE.
+
+13. SEVERABILITY AND WAIVER
+
+If any provision is unenforceable, it will be limited to the minimum extent
+necessary and the remaining provisions will remain in effect. Failure to
+enforce a provision is not a waiver.
+
+14. ENTIRE LICENSE
+
+This license is the entire agreement governing the rights granted here unless
+AiFinPay and the licensee sign a separate written agreement. A separate signed
+agreement controls to the extent of a conflict.
