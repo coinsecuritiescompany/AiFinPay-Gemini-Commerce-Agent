@@ -83,6 +83,13 @@ export function buildApp(dependencies: AppDependencies = dependenciesFromEnv()):
     timestamp: new Date().toISOString()
   }));
 
+  app.get("/v1/aifinpay/status", async () => {
+    if (paymentExecutor instanceof AiFinPayExecutor) {
+      return paymentExecutor.publicStatus();
+    }
+    return { configured: paymentExecutor.configured() };
+  });
+
   app.post("/v1/objectives", { preHandler: requireAdmin }, async (request, reply) => {
     const input = CreateObjectiveSchema.parse(request.body);
     const objective = await orchestrator.createObjective(input);
