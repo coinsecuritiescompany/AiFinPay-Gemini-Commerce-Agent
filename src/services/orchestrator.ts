@@ -1,24 +1,41 @@
 import { randomUUID } from "node:crypto";
 import type {
+  CommerceDecision,
   CreateObjective,
   DecisionRecord,
+  NegotiationRecord,
   ObjectiveRecord,
-  PaymentRecord
+  PaymentRecord,
+  RecoveryRecord
 } from "../domain.js";
 import type { CommerceStore, DecisionEngine, PaymentExecutor } from "./interfaces.js";
+import { NegotiationService } from "./negotiation.js";
 import { evaluatePolicy, findSelectedOffer } from "./policy.js";
+import { executeWithRecovery } from "./recovery.js";
 
 export interface RunResult {
   objective: ObjectiveRecord;
   decision: DecisionRecord;
+  negotiation?: NegotiationRecord;
   payment?: PaymentRecord;
+}
+
+function paymentDecision(base: CommerceDecision, amountUsd: number): CommerceDecision {
+  return {
+    ...base,
+    decision: "PAY",
+    amountUsd,
+    counterOfferUsd: undefined,
+    toolCall: "execute_payment"
+  };
 }
 
 export class CommerceOrchestrator {
   constructor(
     private readonly store: CommerceStore,
     private readonly decisionEngine: DecisionEngine,
-    private readonly paymentExecutor: PaymentExecutor
+    private readonly paymentExecutor: PaymentExecutor,
+    private readonly negotiationService = new NegotiationService()
   ) {}
 
   createObjective(input: CreateObjective): Promise<ObjectiveRecord> {
@@ -54,41 +71,102 @@ export class CommerceOrchestrator {
         return { objective: updated, decision: decisionRecord };
       }
 
-      const offer = findSelectedOffer(objective, modelResult.decision);
-      if (!offer) throw new Error("OFFER_NOT_FOUND_AFTER_POLICY_APPROVAL");
-      const paymentId = randomUUID();
+      const selected = findSelectedOffer(objective, modelResult.decision);
+      if (!selected) throw new Error("OFFER_NOT_FOUND_AFTER_POLICY_APPROVAL");
 
+      let effectiveOffer = selected;
+      let effectiveObjective = objective;
+      let effectiveDecision = modelResult.decision;
+      let negotiation: NegotiationRecord | undefined;
+
+      if (modelResult.decision.decision === "NEGOTIATE") {
+        const counterOfferUsd = modelResult.decision.counterOfferUsd!;
+        const result = await this.negotiationService.negotiate(selected, counterOfferUsd, objective);
+        negotiation = {
+          attempted: true,
+          accepted: result.accepted,
+          listPriceUsd: selected.priceUsd,
+          counterOfferUsd,
+          ...(result.offer ? { agreedPriceUsd: result.offer.priceUsd } : {}),
+          ...(result.reason ? { reason: result.reason } : {})
+        };
+
+        if (!result.accepted || !result.offer) {
+          if (!objective.policy.negotiation.payIfDeclined) {
+            const updated = await this.store.updateObjective(objective.id, { status: "REJECTED" });
+            return { objective: updated, decision: decisionRecord, negotiation };
+          }
+          effectiveDecision = paymentDecision(modelResult.decision, selected.priceUsd);
+          const fallbackVerdict = evaluatePolicy(objective, effectiveDecision);
+          if (!fallbackVerdict.approved) {
+            const status = fallbackVerdict.requiresUserApproval ? "AWAITING_USER" : "REJECTED";
+            const updated = await this.store.updateObjective(objective.id, { status });
+            return { objective: updated, decision: decisionRecord, negotiation };
+          }
+        } else {
+          effectiveOffer = result.offer;
+          effectiveObjective = {
+            ...objective,
+            offers: objective.offers.map((offer) =>
+              offer.offerId === selected.offerId && offer.merchantId === selected.merchantId ? effectiveOffer : offer
+            )
+          };
+          effectiveDecision = {
+            ...paymentDecision(modelResult.decision, effectiveOffer.priceUsd),
+            network: effectiveOffer.network,
+            asset: effectiveOffer.asset
+          };
+          const negotiatedVerdict = evaluatePolicy(effectiveObjective, effectiveDecision);
+          if (!negotiatedVerdict.approved) {
+            const status = negotiatedVerdict.requiresUserApproval ? "AWAITING_USER" : "REJECTED";
+            const updated = await this.store.updateObjective(objective.id, { status });
+            return { objective: updated, decision: decisionRecord, negotiation };
+          }
+        }
+      }
+
+      const paymentId = randomUUID();
       try {
-        const evidence = await this.paymentExecutor.execute(offer, objective);
+        const execution = await executeWithRecovery(
+          this.paymentExecutor,
+          effectiveOffer,
+          effectiveObjective,
+          effectiveDecision
+        );
         const payment: PaymentRecord = {
-          ...evidence,
+          ...execution.evidence,
           id: paymentId,
           objectiveId: objective.id,
           decisionId: decisionRecord.id,
           traceId,
-          merchantId: offer.merchantId,
-          offerId: offer.offerId,
+          merchantId: execution.offer.merchantId,
+          offerId: execution.offer.offerId,
           status: "SUCCEEDED",
+          recovery: execution.recovery,
+          ...(negotiation ? { negotiation } : {}),
           createdAt: new Date().toISOString()
         };
         await this.store.savePayment(payment);
         const updated = await this.store.updateObjective(objective.id, { status: "COMPLETED" });
-        return { objective: updated, decision: decisionRecord, payment };
+        return { objective: updated, decision: decisionRecord, ...(negotiation ? { negotiation } : {}), payment };
       } catch (error) {
         const message = error instanceof Error ? error.message : "UNKNOWN_PAYMENT_ERROR";
+        const recovery = (error as Error & { recovery?: RecoveryRecord }).recovery;
         const payment: PaymentRecord = {
           id: paymentId,
           objectiveId: objective.id,
           decisionId: decisionRecord.id,
           traceId,
-          merchantId: offer.merchantId,
-          offerId: offer.offerId,
+          merchantId: effectiveOffer.merchantId,
+          offerId: effectiveOffer.offerId,
           provider: "AIFP1",
           status: "FAILED",
           errorCode: message.slice(0, 160),
           grossAmountUsd: 0,
           merchantProceedsUsd: 0,
           protocolFeeUsd: 0,
+          ...(recovery ? { recovery } : {}),
+          ...(negotiation ? { negotiation } : {}),
           settledAt: new Date().toISOString(),
           createdAt: new Date().toISOString()
         };
@@ -98,9 +176,7 @@ export class CommerceOrchestrator {
       }
     } catch (error) {
       const current = await this.store.getObjective(objective.id);
-      if (current?.status === "RUNNING") {
-        await this.store.updateObjective(objective.id, { status: "FAILED" });
-      }
+      if (current?.status === "RUNNING") await this.store.updateObjective(objective.id, { status: "FAILED" });
       throw error;
     }
   }
