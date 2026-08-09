@@ -55,7 +55,7 @@ export class NegotiationService {
         ...(parsed.paymentUrl ? { url: parsed.paymentUrl } : {}),
         ...(parsed.token ? { negotiationToken: parsed.token } : {})
       },
-      reason: parsed.reason
+      ...(parsed.reason ? { reason: parsed.reason } : {})
     };
   }
 }
