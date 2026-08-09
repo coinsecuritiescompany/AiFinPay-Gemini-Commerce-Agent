@@ -11,7 +11,7 @@ import { FixedDecisionEngine, FixedPaymentExecutor, testConfig } from "./helpers
 const apps: ReturnType<typeof buildApp>[] = [];
 afterEach(async () => Promise.all(apps.splice(0).map((app) => app.close())));
 
-const policy = {
+const policy: ObjectiveRecord["policy"] = {
   maxBudgetUsd: 0.01,
   autoApproveLimitUsd: 0.01,
   minConfidence: 0.6,
@@ -32,7 +32,7 @@ const policy = {
     allowNetworkFailover: true,
     allowAssetFailover: false
   }
-} as const;
+};
 
 const offer: Offer = {
   merchantId: "merchant-1",
