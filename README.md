@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/coinsecuritiescompany/AiFinPay-Gemini-Commerce-Agent/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/coinsecuritiescompany/AiFinPay-Gemini-Commerce-Agent/actions/workflows/ci.yml/badge.svg" /></a>
-  <a href="https://www.npmjs.com/package/@aifinpay/gemini-commerce-agent"><img alt="npm" src="https://img.shields.io/npm/v/@aifinpay/gemini-commerce-agent?logo=npm" /></a>
+  <a href="https://www.npmjs.com/package/aifinpay-gemini-commerce-agent"><img alt="npm" src="https://img.shields.io/npm/v/aifinpay-gemini-commerce-agent?logo=npm" /></a>
   <img alt="Node.js 22+" src="https://img.shields.io/badge/Node.js-22%2B-339933?logo=nodedotjs&logoColor=white" />
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white" />
   <img alt="Gemini 3.6 Flash" src="https://img.shields.io/badge/Gemini-3.6%20Flash-4285F4?logo=googlegemini&logoColor=white" />
@@ -110,19 +110,19 @@ sequenceDiagram
 Run the packaged service directly:
 
 ```bash
-npx @aifinpay/gemini-commerce-agent
+npx aifinpay-gemini-commerce-agent
 ```
 
 Or install it into a Node.js project:
 
 ```bash
-npm install @aifinpay/gemini-commerce-agent
+npm install aifinpay-gemini-commerce-agent
 ```
 
 The package exports the Fastify application builder for embedding:
 
 ```ts
-import { buildApp } from "@aifinpay/gemini-commerce-agent";
+import { buildApp } from "aifinpay-gemini-commerce-agent";
 
 const app = buildApp();
 await app.listen({ port: 8080 });
@@ -178,7 +178,7 @@ npm audit
 npm pack --dry-run
 ```
 
-The current suite contains 13 tests covering policy enforcement, configuration safety, protected financial routes, revenue accounting, and the successful objective flow.
+The current suite contains 15 tests covering policy enforcement, configuration safety, protected financial routes, revenue accounting, and the successful objective flow.
 
 ## Minimal objective example
 
@@ -269,6 +269,6 @@ Third-party packages remain subject to their own licenses. See [NOTICE](NOTICE) 
 - Product: [aifinpay.io](https://aifinpay.io)
 - Production demo: [aifinpay-gemini-commerce-agent.onrender.com](https://aifinpay-gemini-commerce-agent.onrender.com)
 - AIFP-1 protocol: [AiFinPay/Protocol-AIFP-1](https://github.com/AiFinPay/Protocol-AIFP-1)
-- Gemini Commerce Agent: [`@aifinpay/gemini-commerce-agent`](https://www.npmjs.com/package/@aifinpay/gemini-commerce-agent)
+- Gemini Commerce Agent: [`aifinpay-gemini-commerce-agent`](https://www.npmjs.com/package/aifinpay-gemini-commerce-agent)
 - Agent SDK: [`@aifinpay/agent`](https://www.npmjs.com/package/@aifinpay/agent)
 - MCP server: [`@aifinpay/mcp`](https://www.npmjs.com/package/@aifinpay/mcp)
