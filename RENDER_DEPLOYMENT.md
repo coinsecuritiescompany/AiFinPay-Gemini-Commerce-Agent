@@ -5,10 +5,12 @@ This repository can run on Render while keeping Google Cloud integrations availa
 ## Runtime
 
 - Runtime: Node.js 22+
-- Build command: `npm ci && npm run build`
+- Build command: `npm ci --include=dev && npm run build`
 - Start command: `npm start`
 - Health check: `/health`
 - Default port: Render injects `PORT`; the application reads it automatically.
+
+Because `NODE_ENV=production` is present during Render builds, `--include=dev` is required so TypeScript and the build-time toolchain are installed.
 
 ## Required environment variables
 
@@ -30,8 +32,10 @@ AIFINPAY_PER_CALL_BUDGET_USD=0.05
 For the fastest live Gemini path on Render, set:
 
 ```text
-GOOGLE_API_KEY=<Gemini API key>
+GEMINI_API_KEY=<Gemini API key>
 ```
+
+`GOOGLE_API_KEY` remains a backwards-compatible alias, but new deployments should use `GEMINI_API_KEY`.
 
 For Google Cloud / Vertex AI production credentials, prefer a dedicated Google Cloud service account with least-privilege access and a secure credential injection strategy. Do not commit credential JSON to the repository.
 
