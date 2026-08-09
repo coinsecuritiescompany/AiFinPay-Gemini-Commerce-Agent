@@ -97,7 +97,6 @@ export class GeminiDecisionEngine implements DecisionEngine {
       model: this.model,
       contents: buildPrompt(objective),
       config: {
-        temperature: 0.1,
         toolConfig: {
           functionCallingConfig: {
             mode: FunctionCallingConfigMode.ANY,
