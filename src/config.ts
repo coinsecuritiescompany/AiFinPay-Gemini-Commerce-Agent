@@ -12,6 +12,7 @@ const EnvSchema = z.object({
   ADMIN_TOKEN: z.string().min(24).optional(),
   GOOGLE_CLOUD_PROJECT: z.string().min(1).optional(),
   GOOGLE_CLOUD_LOCATION: z.string().default("global"),
+  GEMINI_API_KEY: z.string().min(1).optional(),
   GOOGLE_API_KEY: z.string().min(1).optional(),
   GEMINI_MODEL: z.string().default("gemini-2.5-flash"),
   FIRESTORE_ENABLED: booleanFromString.default(false),
@@ -52,7 +53,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env) {
     gemini: {
       project: values.GOOGLE_CLOUD_PROJECT,
       location: values.GOOGLE_CLOUD_LOCATION,
-      apiKey: values.GOOGLE_API_KEY,
+      apiKey: values.GEMINI_API_KEY ?? values.GOOGLE_API_KEY,
       model: values.GEMINI_MODEL
     },
     firestore: {
