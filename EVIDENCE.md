@@ -4,24 +4,37 @@ Do not commit customer personal data, private financial records, API keys, walle
 
 ## Product evidence
 
-- [ ] Production Cloud Run URL
-- [ ] `/health` screenshot with Gemini, AiFinPay and Firestore configured
-- [ ] Gemini model observability screenshot
-- [ ] Cloud Logging screenshot with one complete trace ID
+- [x] Production application URL: `https://aifinpay-gemini-commerce-agent.onrender.com`
+- [x] Real production Gemini structured function-call proof: `gemini-3.6-flash`, model request ID `Evh4avzsNJnAqtsPxf6JsA8`, recorded by Render at `2026-08-09T21:58:50Z`
+- [ ] `/health` screenshot with Gemini and AiFinPay configured
+- [ ] Gemini model/API usage screenshot from Google
+- [ ] Render application-log screenshot showing the successful Gemini smoke event
 - [ ] Dashboard screenshot after real user activity
 - [ ] HTTP 402 challenge screenshot or redacted log
-- [ ] Policy approval record
+- [ ] Policy approval record from a real objective
 - [ ] Receipt ID and verification result without bearer JWT
 - [ ] Paid response hash and HTTP status
 
-## Google Cloud evidence
+The Gemini startup smoke test is non-financial: it verifies a real Gemini API call and structured function calling, but it never invokes the payment executor. `GEMINI_STARTUP_SMOKE_TEST` is returned to `false` after verification.
 
-- [ ] May 2026 invoice or zero-dollar cost statement
-- [ ] June 2026 invoice or zero-dollar cost statement
-- [ ] July 2026 invoice or zero-dollar cost statement
+## Google / Google Cloud evidence
+
+- [ ] May 2026 invoice or zero-dollar cost statement, if applicable
+- [ ] June 2026 invoice or zero-dollar cost statement, if applicable
+- [ ] July 2026 invoice or zero-dollar cost statement, if applicable
 - [ ] August 2026 invoice or current cost statement
-- [ ] Cloud Run revision details
-- [ ] Gemini API usage record
+- [ ] Gemini API usage/observability record corresponding to the production test
+- [ ] Google Cloud product evidence required by the hackathon rules
+- [ ] Firestore evidence after production credentials are configured
+- [ ] Cloud Run revision details only if Cloud Run is used for a later deployment
+
+## Render evidence
+
+- [x] Production service created separately from the existing AiFinPay wallet service
+- [x] Production build and deployment reached `live`
+- [x] Application bound successfully to Render's runtime port
+- [x] Gemini production smoke call completed successfully
+- [ ] Capture final Render dashboard deployment screenshot for Devpost
 
 ## Circle Agentic Economy Prize
 
@@ -41,7 +54,7 @@ Do not commit customer personal data, private financial records, API keys, walle
 - [ ] Merchant 99% proceeds
 - [ ] Related-party revenue reported separately
 - [ ] P&L for May, June, July and August
-- [ ] Actual Google Cloud, hosting and marketing expenses
+- [ ] Actual Google Cloud, Render and marketing expenses
 - [ ] Public testimonial, if the customer consents
 
 Grants, investments, internal transfers and team-member payments are not arms-length customer revenue.
@@ -56,5 +69,5 @@ Maximum length: 3 minutes.
 4. Show the deterministic policy verdict.
 5. Show the real AiFinPay payment.
 6. Show receipt verification and delivered result.
-7. Show Circle wallet/transaction proof.
-8. Show Cloud Logging and dashboard metrics.
+7. Show Circle wallet/transaction proof, if entering that prize.
+8. Show Google usage evidence, Render logs and dashboard metrics.
