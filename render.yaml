@@ -15,7 +15,9 @@ services:
       - key: LOG_LEVEL
         value: info
       - key: GEMINI_MODEL
-        value: gemini-2.5-flash
+        value: gemini-3.6-flash
+      - key: GEMINI_STARTUP_SMOKE_TEST
+        value: "false"
       - key: FIRESTORE_ENABLED
         value: "false"
       - key: AIFINPAY_API_BASE_URL
