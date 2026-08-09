@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { buildApp, dependenciesFromEnv } from "./app.js";
 import { loadConfig } from "./config.js";
 import type { ObjectiveRecord } from "./domain.js";
