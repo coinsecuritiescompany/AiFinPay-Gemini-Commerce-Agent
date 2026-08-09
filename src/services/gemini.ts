@@ -90,7 +90,7 @@ function buildClient(config: AppConfig["gemini"]): GoogleGenAI | undefined {
 }
 
 export class GeminiDecisionEngine implements DecisionEngine {
-  private readonly client?: GoogleGenAI;
+  private readonly client: GoogleGenAI | undefined;
   private readonly model: string;
 
   constructor(config: AppConfig["gemini"]) {
