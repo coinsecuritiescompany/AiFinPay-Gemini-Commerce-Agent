@@ -18,6 +18,8 @@ const EnvSchema = z.object({
   GEMINI_STARTUP_SMOKE_TEST: booleanFromString.default(false),
   FIRESTORE_ENABLED: booleanFromString.default(false),
   FIRESTORE_DATABASE_ID: z.string().default("(default)"),
+  MERCHANT_API_ENDPOINTS: z.string().default(""),
+  MERCHANT_API_TIMEOUT_MS: z.coerce.number().int().min(500).max(30_000).default(8_000),
   AIFINPAY_AGENT_SEED_HEX: z.string().regex(/^[0-9a-fA-F]{64}$/).optional(),
   AIFINPAY_API_BASE_URL: z.string().url().default("https://api.aifinpay.io"),
   AIFINPAY_GATEWAY_ORIGINS: z.string().default("https://gateway.aifinpay.io"),
@@ -39,6 +41,20 @@ const EnvSchema = z.object({
       path: ["ADMIN_TOKEN"],
       message: "ADMIN_TOKEN is required in production and whenever financial credentials are configured"
     });
+  }
+
+  for (const endpoint of values.MERCHANT_API_ENDPOINTS.split(",").map((item) => item.trim()).filter(Boolean)) {
+    try {
+      const url = new URL(endpoint);
+      if (url.protocol !== "https:" && values.NODE_ENV === "production") throw new Error("HTTPS_REQUIRED");
+    } catch {
+      context.addIssue({
+        code: "custom",
+        path: ["MERCHANT_API_ENDPOINTS"],
+        message: "MERCHANT_API_ENDPOINTS must contain comma-separated valid URLs; production requires HTTPS"
+      });
+      break;
+    }
   }
 });
 
@@ -62,6 +78,10 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env) {
       enabled: values.FIRESTORE_ENABLED,
       project: values.GOOGLE_CLOUD_PROJECT,
       databaseId: values.FIRESTORE_DATABASE_ID
+    },
+    merchantApi: {
+      endpoints: values.MERCHANT_API_ENDPOINTS.split(",").map((item) => item.trim()).filter(Boolean),
+      timeoutMs: values.MERCHANT_API_TIMEOUT_MS
     },
     aifinpay: {
       seedHex: values.AIFINPAY_AGENT_SEED_HEX,
