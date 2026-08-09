@@ -10,3 +10,4 @@ coverage/
 evidence/private/
 gcp-key*.json
 service-account*.json
+gha-creds-*.json
