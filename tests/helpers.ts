@@ -35,7 +35,13 @@ export const testConfig: AppConfig = {
   port: 8080,
   logLevel: "silent",
   adminToken: "123456789012345678901234",
-  gemini: { project: undefined, location: "global", apiKey: undefined, model: "gemini-test" },
+  gemini: {
+    project: undefined,
+    location: "global",
+    apiKey: undefined,
+    model: "gemini-test",
+    startupSmokeTest: false
+  },
   firestore: { enabled: false, project: undefined, databaseId: "(default)" },
   aifinpay: {
     seedHex: undefined,
