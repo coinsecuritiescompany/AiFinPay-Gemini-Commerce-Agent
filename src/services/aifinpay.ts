@@ -11,6 +11,8 @@ const EXPLORERS: Record<string, string> = {
   unichain: "https://uniscan.xyz/tx/"
 };
 
+const EPSILON = 0.0000001;
+
 export class AiFinPayExecutor implements PaymentExecutor {
   private readonly config: AppConfig["aifinpay"];
   private agentPromise?: Promise<AiFinPayAgent>;
@@ -55,9 +57,7 @@ export class AiFinPayExecutor implements PaymentExecutor {
     try {
       balance = await agent.balance();
     } catch {
-      // Address discovery must stay available even when a public RPC or price
-      // source is temporarily unavailable. Funding can still be verified on
-      // the relevant explorer.
+      // Address discovery remains available when a public RPC or price source is temporarily unavailable.
     }
 
     return {
@@ -74,9 +74,14 @@ export class AiFinPayExecutor implements PaymentExecutor {
 
   async execute(offer: Offer, _objective: ObjectiveRecord): Promise<PaymentEvidence> {
     const agent = await this.agent();
+    const headers: Record<string, string> = {
+      accept: "application/json, text/plain;q=0.9, */*;q=0.8"
+    };
+    if (offer.negotiationToken) headers["x-aifp-negotiation-token"] = offer.negotiationToken;
+
     const response = await agent.fetchPaid(
       offer.url,
-      { method: "GET", headers: { accept: "application/json, text/plain;q=0.9, */*;q=0.8" } },
+      { method: "GET", headers },
       {
         scope: "exact",
         units: 1,
@@ -91,11 +96,13 @@ export class AiFinPayExecutor implements PaymentExecutor {
       (receipt) => receipt.merchantId === offer.merchantId
     );
     const receipt = matchingReceipts.at(-1);
-    const txHash =
-      response.headers.get("aifp-tx-ref") ??
-      response.headers.get("x-aifp-tx-ref") ??
-      undefined;
+    const txHash = response.headers.get("aifp-tx-ref") ?? response.headers.get("x-aifp-tx-ref") ?? undefined;
     const amount = receipt?.amountUsd ?? offer.priceUsd;
+
+    if (receipt && Math.abs(amount - offer.priceUsd) > EPSILON) {
+      throw new Error("AIFINPAY_SETTLEMENT_PRICE_MISMATCH");
+    }
+
     const protocolFee = Number((amount * 0.01).toFixed(8));
     const merchantProceeds = Number((amount - protocolFee).toFixed(8));
     const explorerBase = EXPLORERS[offer.network.toLowerCase()];
