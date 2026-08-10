@@ -1,0 +1,38 @@
+name: Probe v0.3 self-serve production
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    if: github.event.head_commit.message == 'Probe v0.3 self-serve production'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify live landing and health
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE='https://aifinpay-gemini-commerce-agent.onrender.com'
+          curl --fail --silent --show-error --retry 5 --retry-delay 3 "$BASE/" -o /tmp/page.html
+          grep -q 'Create your own agent. Your wallet, your keys.' /tmp/page.html
+          grep -q 'npx aifinpay-gemini-commerce-agent@0.3.0 init' /tmp/page.html
+          grep -q 'Pay a supported HTTP 402 / x402 URL' /tmp/page.html
+          grep -q 'No landing-page merchant registration is required for direct payment.' /tmp/page.html
+          grep -q 'npm v0.3.0' /tmp/page.html
+          grep -q '24 automated tests' /tmp/page.html
+          if grep -q 'AiFinPay execution wallet' /tmp/page.html; then echo 'OLD_SHARED_WALLET_UI_PRESENT'; exit 1; fi
+          if grep -qi '0x0e5c0c3DFC4b134B814965d6562C41C9b276A83F' /tmp/page.html; then echo 'SERVER_WALLET_LEAKED_IN_LANDING'; exit 1; fi
+          if grep -q '/v1/aifinpay/status' /tmp/page.html; then echo 'SERVER_WALLET_ENDPOINT_STILL_LINKED'; exit 1; fi
+          curl --fail --silent --show-error "$BASE/health" -o /tmp/health.json
+          node - <<'NODE'
+          const h=require('/tmp/health.json');
+          if(h.status!=='ok'||h.version!=='0.3.0') throw new Error('bad health/version');
+          for(const c of ['local-encrypted-wallet','universal-x402']) if(!h.capabilities?.includes(c)) throw new Error('missing capability '+c);
+          if(!h.services?.gemini||!h.services?.aifinpay) throw new Error('core services unavailable');
+          console.log('V030_PRODUCTION_OK', h.version, h.capabilities.join(','));
+          NODE
+          npm view aifinpay-gemini-commerce-agent@0.3.0 version | grep -qx '0.3.0'
