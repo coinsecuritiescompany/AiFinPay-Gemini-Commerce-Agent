@@ -1,0 +1,52 @@
+name: Verify v0.3 npm consumer flow
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    if: github.event.head_commit.message == 'Verify v0.3 package as a clean npm consumer'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Build and pack
+        run: |
+          npm ci
+          npm run check
+          npm run build
+          npm pack --silent > /tmp/tarball-name
+      - name: Install tarball as a new user and create wallet
+        shell: bash
+        run: |
+          set -euo pipefail
+          TGZ="$GITHUB_WORKSPACE/$(cat /tmp/tarball-name | tail -n 1)"
+          mkdir -p /tmp/aifp-consumer
+          cd /tmp/aifp-consumer
+          npm init -y >/dev/null
+          npm install "$TGZ" >/dev/null
+          export AIFINPAY_HOME=/tmp/aifp-user-home
+          export AIFINPAY_KEYSTORE_PASSPHRASE='consumer-test-passphrase-2026'
+          npx aifinpay-gemini-commerce-agent init --daily-budget 2 --per-call 0.10 > /tmp/init.json
+          npx aifinpay-gemini-commerce-agent address > /tmp/address.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const init = JSON.parse(fs.readFileSync('/tmp/init.json','utf8'));
+          const addr = JSON.parse(fs.readFileSync('/tmp/address.json','utf8'));
+          if (!init.created || !init.nonCustodial) throw new Error('init flags missing');
+          if (!/^0x[0-9a-fA-F]{40}$/.test(init.evmAddress)) throw new Error('bad EVM address');
+          if (init.evmAddress !== addr.evmAddress) throw new Error('wallet not persistent');
+          if (!addr.solanaAddress || !addr.casperAddress) throw new Error('multichain addresses missing');
+          if (addr.policy.dailyBudgetUsd !== 2 || addr.policy.perCallBudgetUsd !== 0.1) throw new Error('policy not persistent');
+          const keystore = fs.readFileSync('/tmp/aifp-user-home/gemini-commerce-agent.json','utf8');
+          if (/"seed"\s*:|consumer-test-passphrase-2026/.test(keystore)) throw new Error('plaintext secret leaked to keystore');
+          console.log('CONSUMER_INIT_ADDRESS_OK', init.evmAddress);
+          NODE
+          npx aifinpay-gemini-commerce-agent --help | grep -q 'fetch https://'
