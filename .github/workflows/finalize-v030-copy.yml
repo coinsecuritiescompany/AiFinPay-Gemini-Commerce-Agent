@@ -1,0 +1,47 @@
+name: Finalize v0.3 landing copy
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    if: github.event.head_commit.message == 'Finalize v0.3 landing copy'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Sync visible v0.3 facts
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('src/dashboard.ts')
+          s=p.read_text()
+          s=s.replace('npm v0.2.1', 'npm v0.3.0')
+          s=s.replace('<div class="version">v0.2.1</div>', '<div class="version">v0.3.0</div>')
+          s=s.replace('<div class="kicker">v0.2 capabilities</div>', '<div class="kicker">Agent capabilities</div>')
+          s=s.replace('See what is needed, discover offers, negotiate price, enforce deterministic spending policy,\n          pay through AiFinPay AIFP-1, recover from transient failures, verify delivery, and leave an auditable trail.', 'Create a local non-custodial agent, then let Gemini see what is needed, discover offers, negotiate price, enforce deterministic spending policy,\n          and pay supported AiFinPay AIFP-1 / x402 URLs without requiring merchant registration on this landing page.')
+          s=s.replace('<strong>AiFinPay AIFP-1</strong><small>Exact approved HTTP 402 execution</small>', '<strong>AiFinPay + x402</strong><small>AIFP-1 receipts + supported facilitator detection</small>')
+          s=s.replace('<strong>20 automated tests</strong><span>Policy, API, config and advanced-commerce tests pass in CI/release validation.</span>', '<strong>24 automated tests</strong><span>Policy, API, config, advanced-commerce and encrypted-wallet tests pass in CI/release validation.</span>')
+          s=s.replace('<code>aifinpay-gemini-commerce-agent@0.2.1</code> is published.', '<code>aifinpay-gemini-commerce-agent@0.3.0</code> is published.')
+          p.write_text(s)
+          PY
+          npm ci
+          npm run check
+          npm run build
+      - name: Commit final copy
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/dashboard.ts
+          git commit -m 'Finalize v0.3 self-serve landing [skip ci]'
+          git push
