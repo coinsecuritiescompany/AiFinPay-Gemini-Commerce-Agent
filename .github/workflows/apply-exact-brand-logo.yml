@@ -1,0 +1,51 @@
+name: Apply exact AiFinPay frontend logo
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.event.head_commit.message == 'Apply exact AiFinPay frontend logo'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Embed exact brand mark and validate
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          logo = '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'
+          p = Path('src/dashboard.ts')
+          s = p.read_text()
+          s = re.sub(r'<span class="brand-mark" aria-hidden="true">.*?</span>', '<span class="brand-mark"><img src="data:image/webp;base64,' + logo + '" alt="AiFinPay logo" /></span>', s, count=1, flags=re.S)
+          s = s.replace('.brand-mark svg { width: 38px; height: 38px; }', '.brand-mark img { width: 100%; height: 100%; border-radius: 13px; object-fit: cover; display: block; }')
+          s = s.replace('.brand-mark svg { width: 34px; height: 34px; }', '.brand-mark img { width: 100%; height: 100%; border-radius: 13px; object-fit: cover; display: block; }')
+          p.write_text(s)
+
+          app = Path('src/app.ts')
+          a = app.read_text()
+          a = a.replace("default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'", "default-src 'self'; img-src 'self' data:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'")
+          app.write_text(a)
+          PY
+          npm ci
+          npm run check
+          npm run build
+      - name: Commit exact brand mark
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/dashboard.ts src/app.ts
+          git commit -m 'Use exact AiFinPay logo in production dashboard [skip ci]'
+          git push
