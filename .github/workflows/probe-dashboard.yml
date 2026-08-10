@@ -1,0 +1,27 @@
+name: Probe refreshed production dashboard
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    if: github.event.head_commit.message == 'Probe refreshed production dashboard'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify page and live APIs
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --retry 5 --retry-delay 4 https://aifinpay-gemini-commerce-agent.onrender.com/ -o /tmp/page.html
+          grep -q 'Gemini Commerce Agent.' /tmp/page.html
+          grep -q 'Multimodal procurement' /tmp/page.html
+          grep -q 'Dynamic negotiation' /tmp/page.html
+          grep -q 'Self-healing payments' /tmp/page.html
+          curl --fail --silent --show-error https://aifinpay-gemini-commerce-agent.onrender.com/health -o /tmp/health.json
+          node -e "const h=require('/tmp/health.json'); if(h.status!=='ok'||h.version!=='0.2.1'||!h.services?.gemini||!h.services?.aifinpay) process.exit(1); console.log('DASHBOARD_PRODUCTION_OK', h.version)"
+          curl --fail --silent --show-error https://aifinpay-gemini-commerce-agent.onrender.com/v1/aifinpay/status -o /tmp/wallet.json
+          node -e "const w=require('/tmp/wallet.json'); if(!w.configured||!w.evmAddress) process.exit(1); console.log('WALLET_STATUS_OK', w.recommendedFundingNetwork)"
