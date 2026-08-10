@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   inspect:
-    if: github.event.head_commit.message == 'Inspect x402 facilitator and fetchPaid declarations'
+    if: github.event.head_commit.message == 'Inspect generic x402 Agent API'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -18,16 +18,12 @@ jobs:
           node-version: '24'
           cache: npm
       - run: npm ci
-      - name: Show relevant type declarations
+      - name: Show Agent and unified methods
         shell: bash
         run: |
-          echo '--- unifiedAgent fetchPaid ---'
-          sed -n '500,565p' node_modules/@aifinpay/agent/dist/unifiedAgent.d.ts
-          echo '--- standard x402 facilitator ---'
-          cat node_modules/@aifinpay/agent/dist/facilitators/standard-x402.d.ts
-          echo '--- facilitator detection ---'
-          cat node_modules/@aifinpay/agent/dist/facilitators/detect.d.ts
-          echo '--- facilitator exports ---'
-          cat node_modules/@aifinpay/agent/dist/facilitators/index.d.ts
-          echo '--- aifp1 fetch options ---'
-          grep -n -A80 -B10 'interface Aifp1FetchOptions\|type Aifp1FetchOptions' node_modules/@aifinpay/agent/dist/aifp1.d.ts
+          echo '--- agent.d.ts ---'
+          cat node_modules/@aifinpay/agent/dist/agent.d.ts
+          echo '--- unified public methods ---'
+          sed -n '229,535p' node_modules/@aifinpay/agent/dist/unifiedAgent.d.ts
+          echo '--- facilitator base ---'
+          cat node_modules/@aifinpay/agent/dist/facilitators/base.d.ts
