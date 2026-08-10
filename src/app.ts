@@ -85,7 +85,7 @@ export function buildApp(dependencies: AppDependencies = dependenciesFromEnv()):
 
   app.get("/health", async () => ({
     status: "ok",
-    version: "0.2.0",
+    version: "0.2.1",
     storage: store.kind,
     services: {
       gemini: decisionEngine.configured(),
