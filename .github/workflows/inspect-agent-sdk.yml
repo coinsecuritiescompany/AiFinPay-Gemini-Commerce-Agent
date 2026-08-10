@@ -1,0 +1,27 @@
+name: Inspect AiFinPay agent SDK API
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    if: github.event.head_commit.message == 'Inspect installed AiFinPay agent SDK API'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Show package metadata and type declarations
+        shell: bash
+        run: |
+          node -e "const p=require('./node_modules/@aifinpay/agent/package.json'); console.log(JSON.stringify({version:p.version,exports:p.exports},null,2))"
+          find node_modules/@aifinpay/agent -maxdepth 3 -type f \( -name '*.d.ts' -o -name 'package.json' \) -print
+          echo '--- AiFinPayAgent declarations ---'
+          grep -R -n -E 'class AiFinPayAgent|static new|fromSeed|fetchPaid|fetch\(|seed|secret|evmAddress|solanaAddress' node_modules/@aifinpay/agent --include='*.d.ts' | head -n 200
