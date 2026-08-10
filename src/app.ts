@@ -85,7 +85,7 @@ export function buildApp(dependencies: AppDependencies = dependenciesFromEnv()):
 
   app.get("/health", async () => ({
     status: "ok",
-    version: "0.2.1",
+    version: "0.3.0",
     storage: store.kind,
     services: {
       gemini: decisionEngine.configured(),
@@ -95,7 +95,7 @@ export function buildApp(dependencies: AppDependencies = dependenciesFromEnv()):
       circle: circle.configured(),
       firestore: store.kind === "firestore"
     },
-    capabilities: ["multimodal-procurement", "dynamic-negotiation", "self-healing-payments"],
+    capabilities: ["multimodal-procurement", "dynamic-negotiation", "self-healing-payments", "local-encrypted-wallet", "universal-x402"],
     timestamp: new Date().toISOString()
   }));
 

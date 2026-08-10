@@ -36,3 +36,9 @@ Historical AiFinPay traction is not counted as users acquired by the new Gemini 
 - Allowlisted recovery-path validation and recovery evidence records.
 
 These modules were created for the hackathon project. They build on the disclosed pre-existing AiFinPay SDK/AIFP settlement infrastructure. Code/tests do not imply a real external merchant negotiation or cross-network recovery until separately evidenced.
+
+
+### v0.3 hackathon work
+- Local encrypted wallet onboarding for each agent operator.
+- Direct URL HTTP 402 execution with AIFP-1-first handling and supported x402 facilitator auto-detection.
+- Self-serve landing-page onboarding that no longer presents the Render evidence wallet as an end-user wallet.

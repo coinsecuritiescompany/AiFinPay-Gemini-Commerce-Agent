@@ -1,3 +1,12 @@
+## 0.3.0 — self-serve agent wallets and direct x402
+
+- Added `init` for a unique encrypted local non-custodial agent wallet.
+- Added `address` for public funding addresses without private-key output.
+- Added `fetch` for direct AIFP-1 and supported x402 URL payment with local spending caps.
+- Reworked the public dashboard from a shared Render-wallet view into copyable self-serve onboarding.
+- Clarified that merchant catalog APIs are optional discovery, not a prerequisite for direct x402 payment.
+- Expanded the automated suite to 24 tests.
+
 # Changelog
 
 ## 0.2.0 — 2026-08-10

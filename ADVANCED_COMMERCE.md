@@ -222,3 +222,8 @@ Gemini never receives signing keys, agent seeds, admin tokens, Circle secrets, A
 ## Hackathon evidence boundaries
 
 The code and automated tests prove the presence of these capabilities in the hackathon project. They do **not** by themselves prove that an external merchant currently supports the negotiation contract, that a real multimodal purchase has settled, or that a real cross-network recovery occurred. Those claims should only be added to `EVIDENCE.md` after a corresponding production trace, receipt, transaction hash, or external merchant record exists.
+
+
+## Universal direct-URL payment
+
+A known paid URL can be called without onboarding its merchant into the discovery layer. The local CLI first attempts the AIFP-1 flow; if the server returns a non-AIFP-1 HTTP 402, the AiFinPay SDK's generic payment client detects a supported facilitator and retries with the appropriate authorization. `maxAmountUsd` and the locally stored per-call/daily policy remain hard ceilings. “Universal” here means a unified client path across the facilitator formats recognized by the installed SDK, not arbitrary unsupported 402 schemas.

@@ -1,6 +1,6 @@
 {
   "name": "aifinpay-gemini-commerce-agent",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "type": "module",
   "description": "Gemini-powered multimodal commerce agent with deterministic spending policy, negotiation, self-healing execution, and AiFinPay AIFP-1 payments.",
   "license": "SEE LICENSE IN LICENSE",

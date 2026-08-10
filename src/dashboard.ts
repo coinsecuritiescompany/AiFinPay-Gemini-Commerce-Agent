@@ -144,11 +144,19 @@ export const DASHBOARD_HTML = `<!doctype html>
     .state { font-size: 10px; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
     .state.on { color: #62e0b6; }
     .state.off { color: #8da2b9; }
-    .wallet { display: grid; gap: 10px; }
-    .wallet-row { padding: 12px; border: 1px solid rgba(122,169,220,.13); border-radius: 13px; background: rgba(5,15,27,.45); }
-    .wallet-row .k { color: #8299b3; font-size: 10px; text-transform: uppercase; letter-spacing: .1em; }
-    .wallet-row .v { margin-top: 6px; color: #e8f2ff; font-size: 13px; font-weight: 700; word-break: break-all; }
-    .wallet-inline { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .onboarding { display: grid; gap: 12px; }
+    .onboarding-note { color: #97abc3; font-size: 13px; line-height: 1.55; }
+    .onboarding-note strong { color: #eaf4ff; }
+    .command-card { border: 1px solid rgba(122,169,220,.15); border-radius: 15px; background: rgba(4,13,24,.62); overflow: hidden; }
+    .command-head { display:flex; justify-content:space-between; align-items:center; gap:10px; padding: 10px 12px; border-bottom:1px solid rgba(122,169,220,.1); }
+    .command-head strong { font-size: 12px; }
+    .command-head span { color:#7890aa; font-size:10px; text-transform:uppercase; letter-spacing:.08em; }
+    .command-body { display:grid; grid-template-columns: minmax(0,1fr) auto; gap:10px; align-items:center; padding: 12px; }
+    .command-code { color:#78e5c0; font: 600 12px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; overflow-x:auto; white-space:nowrap; }
+    .copy-btn { border:1px solid rgba(90,168,255,.28); background:#10243a; color:#d9eaff; border-radius:10px; padding:8px 10px; cursor:pointer; font-weight:800; font-size:11px; }
+    .copy-btn:hover { border-color:rgba(90,168,255,.65); }
+    .self-sovereign { display:flex; gap:9px; align-items:flex-start; padding:11px 12px; border-radius:13px; background:rgba(66,223,172,.07); border:1px solid rgba(66,223,172,.18); color:#b9d9cf; font-size:12px; line-height:1.5; }
+    .self-sovereign b { color:#69e2ba; }
     .pipeline {
       position: relative; display: grid; grid-template-columns: repeat(6, 1fr); gap: 9px;
     }
@@ -195,7 +203,9 @@ export const DASHBOARD_HTML = `<!doctype html>
       .hero-panel { padding: 18px; border-radius: 20px; }
       .metrics-grid { grid-template-columns: repeat(2, 1fr); }
       .metric { min-height: 108px; padding: 15px; }
-      .service-list, .wallet-inline { grid-template-columns: 1fr; }
+      .service-list { grid-template-columns: 1fr; }
+      .command-body { grid-template-columns: 1fr; }
+      .copy-btn { justify-self: start; }
       .pipeline { grid-template-columns: 1fr 1fr; }
       .section { padding: 27px 0; }
       .section-head { display:block; }
@@ -285,21 +295,34 @@ export const DASHBOARD_HTML = `<!doctype html>
       <div class="metrics-grid" id="metrics"></div>
     </section>
 
-    <section class="section">
+    <section class="section" id="start">
       <div class="section-head">
-        <div><div class="kicker">Runtime</div><h2>System and wallet status.</h2></div>
-        <div class="section-copy">Unavailable optional integrations are shown as not configured — not as successful evidence.</div>
+        <div><div class="kicker">Self-serve onboarding</div><h2>Create your own agent. Your wallet, your keys.</h2></div>
+        <div class="section-copy">The Render wallet is only the hackathon service runtime. Every user creates a separate encrypted non-custodial wallet locally; keys are never copied from this website or shared with the Render service.</div>
       </div>
       <div class="system-layout">
         <article class="panel">
-          <div class="panel-title">Service integrations</div>
-          <div class="service-list" id="services"></div>
+          <div class="panel-title">Start in your terminal</div>
+          <div class="onboarding">
+            <div class="command-card">
+              <div class="command-head"><strong>1. Create a unique local agent + wallet</strong><span>encrypted locally</span></div>
+              <div class="command-body"><code class="command-code" id="cmd-init">npx aifinpay-gemini-commerce-agent@0.3.0 init</code><button class="copy-btn" type="button" onclick="copyCommand('cmd-init', this)">Copy</button></div>
+            </div>
+            <div class="command-card">
+              <div class="command-head"><strong>2. Show your public funding addresses</strong><span>no private key output</span></div>
+              <div class="command-body"><code class="command-code" id="cmd-address">npx aifinpay-gemini-commerce-agent@0.3.0 address</code><button class="copy-btn" type="button" onclick="copyCommand('cmd-address', this)">Copy</button></div>
+            </div>
+            <div class="command-card">
+              <div class="command-head"><strong>3. Pay a supported HTTP 402 / x402 URL</strong><span>local spending cap</span></div>
+              <div class="command-body"><code class="command-code" id="cmd-fetch">npx aifinpay-gemini-commerce-agent@0.3.0 fetch https://merchant.example/paid --max-usd 0.05</code><button class="copy-btn" type="button" onclick="copyCommand('cmd-fetch', this)">Copy</button></div>
+            </div>
+            <div class="self-sovereign"><b>✓</b><span><strong>No landing-page merchant registration is required for direct payment.</strong> The client requests the URL, handles AiFinPay AIFP-1 first, then auto-detects other x402 facilitators supported by the installed SDK. Merchant catalog APIs are optional discovery sources only.</span></div>
+          </div>
         </article>
         <article class="panel">
-          <div class="panel-title">AiFinPay execution wallet</div>
-          <div class="wallet" id="wallet">
-            <div class="wallet-row"><div class="k">Status</div><div class="v">Loading safe public wallet data…</div></div>
-          </div>
+          <div class="panel-title">Live hackathon service</div>
+          <div class="onboarding-note">This hosted Render instance demonstrates Gemini reasoning, deterministic policy, metrics and hackathon evidence. It is <strong>not a shared customer wallet</strong> and it is not where users should store funds.</div>
+          <div class="service-list" id="services" style="margin-top:14px"></div>
         </article>
       </div>
     </section>
@@ -311,10 +334,10 @@ export const DASHBOARD_HTML = `<!doctype html>
       </div>
       <div class="pipeline">
         <div class="flow-card"><div class="n">01</div><strong>Observe</strong><span>Text, JSON, photo, invoice, chart or dashboard screenshot.</span></div>
-        <div class="flow-card"><div class="n">02</div><strong>Source</strong><span>Validated offers from supplied data or configured merchant catalogs.</span></div>
+        <div class="flow-card"><div class="n">02</div><strong>Source</strong><span>Direct URL, discovered web resource, supplied offer, or optional merchant catalog. No landing-page registration is required for x402.</span></div>
         <div class="flow-card"><div class="n">03</div><strong>Decide</strong><span>Gemini proposes PAY, NEGOTIATE, ASK_USER or REJECT.</span></div>
         <div class="flow-card"><div class="n">04</div><strong>Authorize</strong><span>Deterministic policy checks exact offer, budget and allowlists.</span></div>
-        <div class="flow-card"><div class="n">05</div><strong>Pay / Recover</strong><span>AIFP-1 executes HTTP 402; bounded recovery handles transient failures.</span></div>
+        <div class="flow-card"><div class="n">05</div><strong>Pay / Recover</strong><span>AIFP-1 receipt flow runs first; supported x402 facilitators are auto-detected for direct URLs. Bounded recovery handles transient failures.</span></div>
         <div class="flow-card"><div class="n">06</div><strong>Verify</strong><span>Receipt metadata, settlement evidence and delivery hash are recorded.</span></div>
       </div>
     </section>
@@ -348,7 +371,6 @@ export const DASHBOARD_HTML = `<!doctype html>
     <div class="footer-links">
       <a href="/health">/health</a>
       <a href="/v1/metrics">/v1/metrics</a>
-      <a href="/v1/aifinpay/status">/v1/aifinpay/status</a>
       <a href="https://github.com/coinsecuritiescompany/AiFinPay-Gemini-Commerce-Agent" target="_blank" rel="noreferrer">GitHub ↗</a>
     </div>
   </footer>
@@ -371,22 +393,25 @@ const serviceLabels = [
   ['circle', 'Circle wallet']
 ];
 const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 4, maximumFractionDigits: 8 });
-function esc(value) { return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function shortAddress(value) { if (!value) return 'Unavailable'; const s = String(value); return s.length > 24 ? s.slice(0, 12) + '…' + s.slice(-10) : s; }
-function displayBalance(balance) {
-  if (balance == null) return 'Unavailable';
-  if (typeof balance === 'number' || typeof balance === 'string') return String(balance);
-  const candidates = [['POL / Polygon', balance.polygon ?? balance.pol ?? balance.matic], ['SOL / Solana', balance.solana ?? balance.sol], ['Native', balance.native]].filter(([,v]) => v !== undefined && v !== null);
-  if (candidates.length) return candidates.map(([k,v]) => k + ': ' + String(v)).join(' · ');
-  try { const compact = JSON.stringify(balance); return compact.length > 120 ? compact.slice(0,117) + '…' : compact; } catch { return 'Available'; }
+async function copyCommand(id, button) {
+  const text = document.getElementById(id)?.textContent || '';
+  try {
+    await navigator.clipboard.writeText(text);
+    const before = button.textContent;
+    button.textContent = 'Copied';
+    setTimeout(() => { button.textContent = before; }, 1200);
+  } catch {
+    const area = document.createElement('textarea');
+    area.value = text; document.body.appendChild(area); area.select(); document.execCommand('copy'); area.remove();
+    button.textContent = 'Copied';
+    setTimeout(() => { button.textContent = 'Copy'; }, 1200);
+  }
 }
-function stateMarkup(on) { return '<span class="state ' + (on ? 'on' : 'off') + '">' + (on ? 'Active' : 'Not configured') + '</span>'; }
-function walletRow(k, v) { return '<div class="wallet-row"><div class="k">' + esc(k) + '</div><div class="v">' + esc(v) + '</div></div>'; }
+function esc(value) { return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 async function refresh() {
-  const [health, metrics, wallet] = await Promise.all([
+  const [health, metrics] = await Promise.all([
     fetch('/health', { cache: 'no-store' }).then(r => r.json()),
-    fetch('/v1/metrics', { cache: 'no-store' }).then(r => r.json()),
-    fetch('/v1/aifinpay/status', { cache: 'no-store' }).then(r => r.json())
+    fetch('/v1/metrics', { cache: 'no-store' }).then(r => r.json())
   ]);
   document.getElementById('hero-live').textContent = 'Production online · Gemini ' + (health.services?.gemini ? 'live' : 'not configured') + ' · AiFinPay ' + (health.services?.aifinpay ? 'ready' : 'not configured');
   document.getElementById('mini-gemini').textContent = health.services?.gemini ? 'Live' : 'Pending';
@@ -397,12 +422,6 @@ async function refresh() {
     return '<article class="metric"><div class="metric-label">' + label + '</div><div class="metric-value">' + value + '</div></article>';
   }).join('');
   document.getElementById('services').innerHTML = serviceLabels.map(([key, label]) => '<div class="service"><strong>' + label + '</strong>' + stateMarkup(Boolean(health.services?.[key])) + '</div>').join('');
-  document.getElementById('wallet').innerHTML = [
-    walletRow('Funding network', wallet.recommendedFundingNetwork || 'polygon'),
-    walletRow('EVM address', shortAddress(wallet.evmAddress)),
-    walletRow('Balance snapshot', displayBalance(wallet.balance)),
-    '<div class="wallet-inline">' + walletRow('Daily budget', money.format(Number(wallet.dailyBudgetUsd) || 0)) + walletRow('Per-call cap', money.format(Number(wallet.perCallBudgetUsd) || 0)) + '</div>'
-  ].join('');
   const paid = Number(metrics.successfulPayments || 0);
   if (paid > 0) { document.getElementById('settlement-evidence').textContent = 'Funded AIFP-1 settlement recorded'; document.getElementById('settlement-evidence-copy').textContent = paid + ' successful payment(s) recorded by the production metrics store.'; }
   const time = health.timestamp ? new Date(health.timestamp) : new Date();

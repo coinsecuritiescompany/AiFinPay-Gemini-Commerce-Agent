@@ -316,3 +316,8 @@ The core trust model now includes three optional capability stages before/around
 3. `NegotiationService` and `executeWithRecovery` add bounded counter-offers plus transient-failure recovery. Every negotiated or recovery candidate is re-checked by deterministic spending policy before AiFinPay receives it.
 
 The AI layer never receives signing credentials and cannot expand merchant/network/asset allowlists. See [ADVANCED_COMMERCE.md](ADVANCED_COMMERCE.md) for the complete contracts and threat boundaries.
+
+
+## Per-user local wallet and universal x402
+
+The public Render service is a hackathon runtime, not a custody surface for end users. `npx aifinpay-gemini-commerce-agent init` creates a distinct local seed for each operator, encrypts it at rest, and derives the agent's EVM/Solana/Casper identities locally. Direct URL execution uses AIFP-1 first to preserve receipt batching; an unresolved HTTP 402 then falls back to the installed SDK's generic facilitator detection (`Agent.pay`) with a deterministic maximum-amount cap. Merchant catalog integrations are optional sourcing inputs rather than a payment prerequisite.

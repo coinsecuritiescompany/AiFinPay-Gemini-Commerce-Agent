@@ -115,21 +115,50 @@ sequenceDiagram
 | Evidence | Structured Render logs, metrics dashboard, optional Firestore |
 | Delivery | GitHub Actions + Render |
 
-## Install from npm
+## Install and create your own agent
 
-Run the packaged service directly:
+The hosted Render service is the hackathon runtime, **not a shared user wallet**. Every operator should create a separate local non-custodial agent.
 
-```bash
-npx aifinpay-gemini-commerce-agent
-```
-
-Or install it into a Node.js project:
+### 1. Create a unique encrypted local wallet
 
 ```bash
-npm install aifinpay-gemini-commerce-agent
+npx aifinpay-gemini-commerce-agent@0.3.0 init
 ```
 
-The package exports the Fastify application builder for embedding:
+The command generates a fresh 32-byte seed locally, derives the agent's EVM, Solana and Casper identities, encrypts the seed with AES-256-GCM using a scrypt-derived key, and stores only the encrypted keystore under `~/.aifinpay/` with restrictive filesystem permissions. The seed is not sent to the AiFinPay Render service.
+
+Optional local limits:
+
+```bash
+npx aifinpay-gemini-commerce-agent@0.3.0 init --daily-budget 5 --per-call 0.10
+```
+
+### 2. Show your public funding addresses
+
+```bash
+npx aifinpay-gemini-commerce-agent@0.3.0 address
+```
+
+This decrypts the local keystore after passphrase entry and prints public addresses only.
+
+### 3. Pay a supported HTTP 402 / x402 URL directly
+
+```bash
+npx aifinpay-gemini-commerce-agent@0.3.0 fetch https://merchant.example/paid --max-usd 0.05
+```
+
+The direct URL flow does **not** require the merchant to register on this landing page. The client gives AIFP-1 first refusal so AiFinPay receipt batching/reuse remains available; if the response is still HTTP 402, the installed AiFinPay SDK auto-detects another supported x402 facilitator and refuses a quote above the local `--max-usd` / per-call policy before authorizing payment. Support is limited to facilitator formats recognized by the installed SDK; this is not a claim that every proprietary 402 variant on the internet is automatically compatible.
+
+`MERCHANT_API_ENDPOINTS` remains optional. It is for procurement discovery/catalog search, not a prerequisite for paying a known x402 URL.
+
+### 4. Run the full local Gemini commerce service
+
+```bash
+export GEMINI_API_KEY=...
+npx aifinpay-gemini-commerce-agent@0.3.0 start
+```
+
+The package also exports the Fastify application builder for embedding:
 
 ```ts
 import { buildApp } from "aifinpay-gemini-commerce-agent";
@@ -138,9 +167,7 @@ const app = buildApp();
 await app.listen({ port: 8080 });
 ```
 
-Live Gemini calls require `GEMINI_API_KEY`. Production financial execution additionally requires an `ADMIN_TOKEN` and an AiFinPay agent seed; never commit these values.
-
-Optional merchant catalog discovery uses `MERCHANT_API_ENDPOINTS` (comma-separated HTTPS base URLs exposing `POST /search`).
+For non-interactive local automation, the keystore passphrase can be supplied through `AIFINPAY_KEYSTORE_PASSPHRASE`; do not commit it or place it in public logs.
 
 ## Repository map
 
@@ -194,7 +221,7 @@ npm audit
 npm pack --dry-run
 ```
 
-The current suite contains 20 tests covering policy enforcement, configuration safety, protected financial routes, revenue accounting, and the successful objective flow.
+The current suite contains 24 tests covering policy enforcement, configuration safety, protected financial routes, revenue accounting, and the successful objective flow.
 
 ## Minimal objective example
 
