@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   inspect:
-    if: github.event.head_commit.message == 'Inspect installed AiFinPay agent SDK API'
+    if: github.event.head_commit.message == 'Inspect x402 facilitator and fetchPaid declarations'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -18,10 +18,16 @@ jobs:
           node-version: '24'
           cache: npm
       - run: npm ci
-      - name: Show package metadata and type declarations
+      - name: Show relevant type declarations
         shell: bash
         run: |
-          node -e "const p=require('./node_modules/@aifinpay/agent/package.json'); console.log(JSON.stringify({version:p.version,exports:p.exports},null,2))"
-          find node_modules/@aifinpay/agent -maxdepth 3 -type f \( -name '*.d.ts' -o -name 'package.json' \) -print
-          echo '--- AiFinPayAgent declarations ---'
-          grep -R -n -E 'class AiFinPayAgent|static new|fromSeed|fetchPaid|fetch\(|seed|secret|evmAddress|solanaAddress' node_modules/@aifinpay/agent --include='*.d.ts' | head -n 200
+          echo '--- unifiedAgent fetchPaid ---'
+          sed -n '500,565p' node_modules/@aifinpay/agent/dist/unifiedAgent.d.ts
+          echo '--- standard x402 facilitator ---'
+          cat node_modules/@aifinpay/agent/dist/facilitators/standard-x402.d.ts
+          echo '--- facilitator detection ---'
+          cat node_modules/@aifinpay/agent/dist/facilitators/detect.d.ts
+          echo '--- facilitator exports ---'
+          cat node_modules/@aifinpay/agent/dist/facilitators/index.d.ts
+          echo '--- aifp1 fetch options ---'
+          grep -n -A80 -B10 'interface Aifp1FetchOptions\|type Aifp1FetchOptions' node_modules/@aifinpay/agent/dist/aifp1.d.ts
