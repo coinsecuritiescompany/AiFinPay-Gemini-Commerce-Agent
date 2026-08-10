@@ -223,7 +223,7 @@ export const DASHBOARD_HTML = `<!doctype html>
       </div>
     </a>
     <nav class="nav-links" aria-label="Project links">
-      <a class="nav-link" href="https://www.npmjs.com/package/aifinpay-gemini-commerce-agent" target="_blank" rel="noreferrer">npm v0.2.1</a>
+      <a class="nav-link" href="https://www.npmjs.com/package/aifinpay-gemini-commerce-agent" target="_blank" rel="noreferrer">npm v0.3.0</a>
       <a class="nav-link" href="https://github.com/coinsecuritiescompany/AiFinPay-Gemini-Commerce-Agent" target="_blank" rel="noreferrer">GitHub</a>
       <a class="nav-link" href="https://aifinpay.io" target="_blank" rel="noreferrer">aifinpay.io</a>
     </nav>
@@ -235,8 +235,8 @@ export const DASHBOARD_HTML = `<!doctype html>
         <div class="kicker"><span class="gemini-star">✦</span> Build with Gemini XPRIZE</div>
         <h1><span class="gradient-text">Gemini Commerce Agent.</span><br />Autonomous procurement with financial guardrails.</h1>
         <p class="lead">
-          See what is needed, discover offers, negotiate price, enforce deterministic spending policy,
-          pay through AiFinPay AIFP-1, recover from transient failures, verify delivery, and leave an auditable trail.
+          Create a local non-custodial agent, then let Gemini see what is needed, discover offers, negotiate price, enforce deterministic spending policy,
+          and pay supported AiFinPay AIFP-1 / x402 URLs without requiring merchant registration on this landing page.
         </p>
         <div class="hero-actions">
           <a class="btn primary" href="#live">View live system</a>
@@ -247,14 +247,14 @@ export const DASHBOARD_HTML = `<!doctype html>
       <aside class="hero-panel">
         <div class="live-row">
           <div class="live-badge"><span class="dot"></span><span id="hero-live">Checking production…</span></div>
-          <div class="version">v0.2.1</div>
+          <div class="version">v0.3.0</div>
         </div>
         <div class="agent-title">Gemini <span class="muted">×</span> AiFinPay</div>
         <div class="agent-sub">Reasoning stays separate from financial authority. Gemini proposes. Policy authorizes. AiFinPay executes.</div>
         <div class="mini-flow">
           <div class="mini-node"><div class="mini-icon">✦</div><div><strong>Gemini</strong><small>Vision + structured commerce decision</small></div><div class="mini-state" id="mini-gemini">—</div></div>
           <div class="mini-node"><div class="mini-icon">✓</div><div><strong>Deterministic policy</strong><small>Budget, merchant, network and asset controls</small></div><div class="mini-state">Always</div></div>
-          <div class="mini-node"><div class="mini-icon">402</div><div><strong>AiFinPay AIFP-1</strong><small>Exact approved HTTP 402 execution</small></div><div class="mini-state" id="mini-aifp">—</div></div>
+          <div class="mini-node"><div class="mini-icon">402</div><div><strong>AiFinPay + x402</strong><small>AIFP-1 receipts + supported facilitator detection</small></div><div class="mini-state" id="mini-aifp">—</div></div>
           <div class="mini-node"><div class="mini-icon">↻</div><div><strong>Self-healing</strong><small>Bounded retry and allowlisted failover</small></div><div class="mini-state">Enabled</div></div>
         </div>
       </aside>
@@ -262,7 +262,7 @@ export const DASHBOARD_HTML = `<!doctype html>
 
     <section class="section">
       <div class="section-head">
-        <div><div class="kicker">v0.2 capabilities</div><h2>From payment script to procurement operator.</h2></div>
+        <div><div class="kicker">Agent capabilities</div><h2>From payment script to procurement operator.</h2></div>
         <div class="section-copy">The AI layer can reason across visual and merchant data, but it cannot expand budgets, allowlists, or signing authority.</div>
       </div>
       <div class="cap-grid">
@@ -352,8 +352,8 @@ export const DASHBOARD_HTML = `<!doctype html>
           <div class="panel-title">Verified now</div>
           <div class="evidence-item"><div class="check">✓</div><div><strong>Production service</strong><span>Render-hosted public runtime with live health and metrics endpoints.</span></div></div>
           <div class="evidence-item"><div class="check">✓</div><div><strong>Gemini structured call</strong><span>Production Gemini 3.6 Flash smoke call previously completed successfully.</span></div></div>
-          <div class="evidence-item"><div class="check">✓</div><div><strong>20 automated tests</strong><span>Policy, API, config and advanced-commerce tests pass in CI/release validation.</span></div></div>
-          <div class="evidence-item"><div class="check">✓</div><div><strong>npm distribution</strong><span><code>aifinpay-gemini-commerce-agent@0.2.1</code> is published.</span></div></div>
+          <div class="evidence-item"><div class="check">✓</div><div><strong>24 automated tests</strong><span>Policy, API, config, advanced-commerce and encrypted-wallet tests pass in CI/release validation.</span></div></div>
+          <div class="evidence-item"><div class="check">✓</div><div><strong>npm distribution</strong><span><code>aifinpay-gemini-commerce-agent@0.3.0</code> is published.</span></div></div>
         </article>
         <article class="panel">
           <div class="panel-title">Production evidence to earn</div>
