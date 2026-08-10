@@ -1,7 +1,7 @@
 # AiFinPay Gemini Commerce Agent
 
 <p align="center">
-  <img src="docs/assets/hero.svg" alt="AiFinPay Gemini Commerce Agent — policy-controlled payments for autonomous agents" width="100%" />
+  <img src="docs/assets/hero.svg?v=20260810" alt="AiFinPay Gemini Commerce Agent — policy-controlled payments for autonomous agents" width="100%" />
 </p>
 
 <p align="center">
@@ -194,7 +194,7 @@ npm audit
 npm pack --dry-run
 ```
 
-The current suite contains 15 tests covering policy enforcement, configuration safety, protected financial routes, revenue accounting, and the successful objective flow.
+The current suite contains 20 tests covering policy enforcement, configuration safety, protected financial routes, revenue accounting, and the successful objective flow.
 
 ## Minimal objective example
 
